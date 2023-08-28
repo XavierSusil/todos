@@ -1,22 +1,43 @@
-import { Grid, Typography, Paper } from "@mui/material";
+import { Grid, Typography, Paper, Divider, Box } from "@mui/material";
 import Navbar from "../../components/Navbar";
+import styled from "@emotion/styled";
+
+import landinPageBack from "../../assets/landingPageBack.jpg"
+
+const FlexPaper = styled(Paper)({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  height: "100%",
+});
 
 const Home = () => {
   return (
     <>
-      <Grid container sx={{minHeight:'100vh'}}>
-        <Grid item xs={3} >
-          <Paper elevation={12} sx={{height:'100%'}}>
-            <Typography variant="h2" component={"h2"}>
-              Side Bar
+      <Grid container sx={{ minHeight: "100vh" ,overflow:'hidden'}}>
+        <Grid item xs={2}>
+          <FlexPaper elevation={24}>
+            <Typography variant="h2" component={"h2"} noWrap>
+              TODOS
             </Typography>
-          </Paper>
+            <Divider sx={{ borderBottomWidth: 1, width: "85%" }} />
+          </FlexPaper>
         </Grid>
-        <Grid item xs={9}>
+        <Grid item xs={10}>
           <Navbar />
-          <Typography variant="h1" component={"h1"}>
-            Home Page
-          </Typography>
+          <Box
+            sx={{
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              backgroundImage: `url(${landinPageBack})`,
+              backgroundSize: "cover",
+            }}
+          >
+            <Typography variant="h3" component={"h1"}>
+              LOGIN TO VIEW YOUR TODOS
+            </Typography>
+          </Box>
         </Grid>
       </Grid>
     </>
