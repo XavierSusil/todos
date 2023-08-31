@@ -2,10 +2,14 @@ import { AppBar, Toolbar, Typography , Button, Box} from "@mui/material";
 import useLocalStorage from "../hooks/useLocalStorage"
 import { useNavigate } from "react-router-dom";
 import { enqueueSnackbar } from "notistack";
+import { useDispatch, useSelector } from "react-redux";
+import {logout as clearLogin} from "../redux/slices/loginSlice"
 
 const Navbar = () => {
   // if true, the user is currently logged in
-  const [isLogin, ,clearLogin] = useLocalStorage("login",false);
+ // const [isLogin, ,clearLogin] = useLocalStorage("login",false);
+  const isLogin = useSelector((state) => state.login.isLoggedIn)
+  const dispatch = useDispatch();
   const [,,clearToken] = useLocalStorage("token",'');
   const navigate = useNavigate();
 
@@ -13,8 +17,8 @@ const Navbar = () => {
     
     // logout button is currently in navbar so clear localstorage 
     if(isLogin){
-      clearToken();
-      clearLogin();
+      clearToken(); 
+      dispatch(clearLogin());
       enqueueSnackbar("logged out successfully",{
         variant:'success',
         autoHideDuration: 3000,

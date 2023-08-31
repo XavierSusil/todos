@@ -14,12 +14,15 @@ import loginApi from "../../api/loginApi";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { enqueueSnackbar } from "notistack";
 import { useNavigate } from "react-router-dom";
-
+import {login as loginAction} from "../../redux/slices/loginSlice"
+import { useDispatch } from "react-redux";
 
 const Login = () => {
+  
   const navigate = useNavigate();
   const [, setToken] = useLocalStorage("token", "");
-  const [, setLogin] = useLocalStorage("login", "");
+  const dispatch = useDispatch();
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -28,10 +31,11 @@ const Login = () => {
       password: data.get("password"),
     });
     const fromApi = await loginApi(data.get("username"), data.get("password"));
+    console.log(fromApi);
     if (fromApi.hasOwnProperty("token")) {
       enqueueSnackbar("Login Success", { variant: "success" });
       setToken(fromApi.token);
-      setLogin(true);
+      dispatch(loginAction(fromApi.data));
       navigate("/");
     } else {
       enqueueSnackbar("Login Failed", { variant: "error" });

@@ -1,6 +1,8 @@
 import {combineReducers , configureStore} from '@reduxjs/toolkit'
 import storage from 'redux-persist/lib/storage'
 import {persistReducer , persistStore } from 'redux-persist'
+import loginSlice from './slices/loginSlice'
+import todoSlice from './slices/todoSlice'
 
 const persistConfig = {
     key:'root',
@@ -9,7 +11,10 @@ const persistConfig = {
 
 const persistedReducer = persistReducer(
     persistConfig,
-    combineReducers({})
+    combineReducers({
+        login:loginSlice,
+        todo:todoSlice
+    })
 )
 
 export const store = configureStore({

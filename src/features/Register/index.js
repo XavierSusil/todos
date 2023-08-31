@@ -18,6 +18,9 @@ import registerApi from "../../api/registerApi";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { useNavigate } from "react-router-dom";
 
+import { login as loginAction } from "../../redux/slices/loginSlice";
+import { useDispatch } from "react-redux";
+
 const enqueErrorMessage = (message) => {
   enqueueSnackbar(`Please enter ${message}`, {
     variant: "warning",
@@ -65,8 +68,9 @@ const validate = (data) => {
 
 const Register = () => {
   const [, setToken] = useLocalStorage("token", "");
-  const [, setLogin] = useLocalStorage("login", false);
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -76,7 +80,7 @@ const Register = () => {
       const dataFromApi = await registerApi(data);
       if (dataFromApi.hasOwnProperty("token")) {
         setToken(dataFromApi.token);
-        setLogin(true);
+        dispatch(loginAction(dataFromApi.data));
         enqueueSnackbar("User Registered Successfully", {
           variant: "success",
           autoHideDuration: 3000,
