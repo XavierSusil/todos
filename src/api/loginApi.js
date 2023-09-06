@@ -24,7 +24,6 @@ const loginApi = async (username, password) => {
       }),
     });
     const data = await respsonse.json();
-    console.log(data);
     return data;
   } catch (e) {
     console.log(e);

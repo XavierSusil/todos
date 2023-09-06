@@ -9,8 +9,6 @@ import endPointUrl from "../endPoint"
  */
 const createTodoApi = async (data , token) => {
 
-    console.log(data);
-
     const url = endPointUrl + "/todo";  
     try{
     const response = await fetch(url, {

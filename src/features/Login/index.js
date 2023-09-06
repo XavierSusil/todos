@@ -26,12 +26,9 @@ const Login = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      username: data.get("username"),
-      password: data.get("password"),
-    });
+   
     const fromApi = await loginApi(data.get("username"), data.get("password"));
-    console.log(fromApi);
+
     if (fromApi.hasOwnProperty("token")) {
       enqueueSnackbar("Login Success", { variant: "success" });
       setToken(fromApi.token);

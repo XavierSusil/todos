@@ -2,19 +2,47 @@ import { Box, Button, TextField, Paper, Grid, Typography } from "@mui/material";
 import DoneIcon from "@mui/icons-material/Done";
 import ClearIcon from "@mui/icons-material/Clear";
 import createTodoApi from "../../api/createTodoApi";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 import extractDataFromForm from "../../utils/extractDataFromForm";
 import useLocalStorage from "../../hooks/useLocalStorage";
 
+import {
+  addTodo as addTodoAction,
+  deleteTodo,
+  updateTodoStatus,
+} from "../../redux/slices/loginSlice";
+
+import { changeStatus as changeStatusAction } from "../../redux/slices/filterStatusSlice";
+
+import { updateTodoStatusApi } from "../../api/updateTodoApi";
+import deleteTodoApi from "../../api/deleteTodoApi";
+import { enqueueSnackbar } from "notistack";
+import useFilteredTodos from "../../hooks/useFilteredTodos";
+
 const CreateTodo = () => {
-  const userid = useSelector((state) => state.login.user.id)
+  const userid = useSelector((state) => state.login.user.id);
   const [token] = useLocalStorage("token", "");
+  const dispatch = useDispatch();
+
   const handleTodoSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = extractDataFromForm(formData);
     data.userid = userid;
-    const response = await  createTodoApi(data,token);
+
+    const response = await createTodoApi(data, token);
+
+    if (response.hasOwnProperty("title")) {
+      enqueueSnackbar("Todo Added", {
+        variant: "success",
+      });
+      dispatch(addTodoAction(response));
+    } else {
+      enqueueSnackbar("Todo Cannot Be Created", {
+        variant: "error",
+      });
+    }
     console.log(response);
   };
 
@@ -70,7 +98,27 @@ const CreateTodo = () => {
   );
 };
 
-const TodoItem = ({ title }) => {
+const TodoItem = ({ id }) => {
+
+  console.log("id of the todo item " + id);
+  const [token] = useLocalStorage("token", "");
+  const dispatch = useDispatch();
+
+  const todo = useSelector((state) =>
+    state.login.user.todos.find((t) => t.id === id)
+  );
+  console.log(todo);
+
+  const handleDoneButton = async () => {
+    await updateTodoStatusApi(id, "COMPLETED", token);
+    dispatch(updateTodoStatus({ id, status: "COMPLETED" }));
+  };
+
+  const handleDeleteButton = async () => {
+    await deleteTodoApi(id, token);
+    dispatch(deleteTodo(id));
+  };
+
   return (
     <Paper
       sx={{
@@ -80,12 +128,17 @@ const TodoItem = ({ title }) => {
         alignItems: "center",
       }}
     >
-      <Typography color="primary">{title}</Typography>
+      <Typography >
+       {todo?.title}
+      </Typography>
       <Box>
-        <Button>
+        {
+          todo?.status === 'COMPLETED' ? <> </> :
+          <Button onClick={handleDoneButton}>
           <DoneIcon fontSize="small" color="success" />
         </Button>
-        <Button>
+        }
+        <Button onClick={handleDeleteButton}>
           <ClearIcon fontSize="small" color="error" />
         </Button>
       </Box>
@@ -93,7 +146,61 @@ const TodoItem = ({ title }) => {
   );
 };
 
+const TodoFilters = () => {
+  const currentFilter = useSelector((state) => state.filterStatus);
+  const dispatch = useDispatch();
+
+  const handleAllButtonClick = () => {
+    dispatch(changeStatusAction("ALL"));
+  };
+
+  const handleProgressButtonClick = () => {
+    dispatch(changeStatusAction("IN_PROGRESS"));
+  };
+
+  const handleDoneButtonClick = () => {
+    dispatch(changeStatusAction("COMPLETED"));
+  };
+
+  return (
+    <>
+      <Grid container spacing={1}>
+        <Grid item xs={4} sx={{ display: "flex", justifyContent: "center" }}>
+          <Button variant={currentFilter === 'ALL'?'contained':'outlined'} fullWidth onClick={handleAllButtonClick}
+          color = {currentFilter === 'ALL'?'secondary':'primary'}>
+            All
+          </Button>
+        </Grid>
+        <Grid item xs={4} sx={{ display: "flex", justifyContent: "center" }}>
+          <Button
+            variant={currentFilter === 'IN_PROGRESS'?'contained':'outlined'} 
+            fullWidth
+            onClick={handleProgressButtonClick}
+            color = {currentFilter === 'IN_PROGRESS'?'secondary':'primary'}
+          >
+            In Progress
+          </Button>
+        </Grid>
+
+        <Grid item xs={4} sx={{ display: "flex", justifyContent: "center" }}>
+          <Button variant={currentFilter === 'COMPLETED'?'contained':'outlined'}  fullWidth onClick={handleDoneButtonClick}
+          color = {currentFilter === 'COMPLETED'?'secondary':'primary'}>
+            Completed
+          </Button>
+        </Grid>
+      </Grid>
+    </>
+  );
+};
+
 const Todo = () => {
+
+  const todos = useFilteredTodos();
+  
+  useEffect(() => {
+    console.log("todos inside Main Todo Component",todos)
+  },[todos])
+  
   return (
     <Grid container rowSpacing={1}>
       <Grid
@@ -127,18 +234,13 @@ const Todo = () => {
             width: "75%",
             display: "flex",
             flexDirection: "column",
-            gap: 1,
+            gap: 2,
           }}
         >
-          <TodoItem title={"Example Title"} />
-          <TodoItem title={"Second example"} />
-          <TodoItem title={"Example Title"} />
-          <TodoItem title={"Example Title"} />
-          <TodoItem title={"Second example"} />
-          <TodoItem title={"Example Title"} />
-          <TodoItem title={"Second example"} />
-          <TodoItem title={"Example Title"} />
-          <TodoItem title={"Second example"} />
+          <TodoFilters />
+          {todos?.map((val) => (
+            <TodoItem key={val.id} id={val.id} />
+          ))}
         </Box>
       </Grid>
     </Grid>
