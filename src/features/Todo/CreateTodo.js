@@ -41,7 +41,6 @@ const CreateTodo = () => {
 
     const formData = new FormData(e.currentTarget);
     const data = extractDataFromForm(formData);
-    console.log(data, "inside handleTodoSubmit");
     data.userid = userid;
 
     dispatch(createTodoThunk({ data, token }));
@@ -96,21 +95,21 @@ const CreateTodo = () => {
         required
       />
       <FormControl>
-        <FormLabel id="priority">Priority</FormLabel>
+        <FormLabel>Priority</FormLabel>
         <RadioGroup name="priority" defaultValue="low" row>
           <FormControlLabel
-            value="LOW"
-            control={<Radio color="secondary" />}
+            value="LOW" // values should be in capital letters 
+            control={<Radio color="green" />}
             label="low"
           />
           <FormControlLabel
             value="MEDIUM"
-            control={<Radio color="secondary" />}
+            control={<Radio color="yellow" />}
             label="medium"
           />
           <FormControlLabel
-            value="HIGH"
-            control={<Radio color="secondary" />}
+            value="HIGH" 
+            control={<Radio color="red" />}
             label="high"
           />
         </RadioGroup>

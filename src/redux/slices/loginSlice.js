@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import createTodoApi from "../../api/createTodoApi";
+import { updateTodoApi } from "../../api/updateTodoApi";
 
 import { enqueue } from "./snackbarSlice";
 /**
@@ -19,21 +20,36 @@ const addTodoReducer = (state, action) => {
 
 export const createTodoThunk = createAsyncThunk(
   "login/createTodoThunk",
-  async ({ data, token }, { rejectWithValue, getState ,dispatch}) => {
-
-    if (getState().login?.user?.todos.find((todo) => todo.title === data.title)) {
-      dispatch(enqueue({message:'Todo already exists',variant:'error'}));
+  async ({ data, token }, { rejectWithValue, getState, dispatch }) => {
+    if (
+      getState().login?.user?.todos.find((todo) => todo.title === data.title)
+    ) {
+      dispatch(enqueue({ message: "Todo already exists", variant: "error" }));
       return rejectWithValue("Todo already exists");
     }
 
     const response = await createTodoApi(data, token);
 
     if (response.hasOwnProperty("title")) {
-      dispatch(enqueue({message:'Todo Added',variant:'success'}))
+      dispatch(enqueue({ message: "Todo Added", variant: "success" }));
       return response;
     }
-    dispatch(enqueue({message:'Todo cannot be created',variant:'error'}))
+    dispatch(enqueue({ message: "Todo cannot be created", variant: "error" }));
     return rejectWithValue("error creating todo");
+  }
+);
+
+export const updateTodoThunk = createAsyncThunk(
+  "login/updateTodoThunk",
+  async ({id, data, token }, { rejectWithValue, dispatch }) => {
+    const response = await updateTodoApi(id,data, token);
+    console.log(response);
+    if (response.hasOwnProperty("title")) {
+      dispatch(enqueue({ message: "Todo Updated", variant: "success" }));
+      return response;
+    }
+    dispatch(enqueue({ message: "Todo cannot be updated", variant: "error" }));
+    return rejectWithValue("error updating todo");
   }
 );
 
@@ -69,7 +85,16 @@ const loginSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(createTodoThunk.fulfilled, addTodoReducer);
+    builder
+      .addCase(createTodoThunk.fulfilled, addTodoReducer)
+      .addCase(updateTodoThunk.fulfilled, (state, action) => {
+        if (state.isLoggedIn) {
+          const todo = state.user.todos.find((t) => t.id === action.payload.id);
+          todo.title = action.payload.title;
+          todo.description = action.payload.description;
+          todo.priority = action.payload.priority;
+        }
+      });
   },
 });
 
