@@ -3,19 +3,25 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const filterStatusSlice = createSlice({
     name: 'filterStatus',
-    initialState: 'ALL',
+    initialState: {
+        filter:'ALL',
+        sort:'DESC'
+    },
     reducers: {
         changeStatus: (state, action) => {
             switch (action.payload) {
                 case 'ALL' : 
                 case 'IN_PROGRESS' :
-                case 'COMPLETED' : return action.payload
-                default: return 'ALL'
+                case 'COMPLETED' : state.filter = action.payload; break;
+                default: state.filter = 'ALL';
             }
+        },
+        changeSortOrder: (state) => {
+            state.sort = state.sort === 'DESC' ? 'ASC' : 'DESC';
         }
     }
 })
 
 export default filterStatusSlice.reducer;
 
-export const {changeStatus} = filterStatusSlice.actions
+export const {changeStatus , changeSortOrder} = filterStatusSlice.actions

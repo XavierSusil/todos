@@ -3,6 +3,7 @@ import storage from 'redux-persist/lib/storage'
 import {persistReducer , persistStore } from 'redux-persist'
 import loginSlice from './slices/loginSlice'
 import filterStatusSlice from './slices/filterStatusSlice'
+import snackbarSlice from './slices/snackbarSlice'
 
 const persistConfig = {
     key:'root',
@@ -13,7 +14,8 @@ const persistedReducer = persistReducer(
     persistConfig,
     combineReducers({
         login:loginSlice,
-        filterStatus:filterStatusSlice
+        filter:filterStatusSlice,
+        snackbar:snackbarSlice
     })
 )
 

@@ -8,6 +8,15 @@ const theme = createTheme({
         },
         secondary :{
             main : "#B2B04D"
+        },
+        green:{
+            main: "#00FF00"
+        },
+        yellow:{
+            main: "#FFFF00"
+        },
+        red: {
+            main: "#FF0000"
         }
     },
     typography :{
