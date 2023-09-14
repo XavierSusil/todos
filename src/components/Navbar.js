@@ -33,7 +33,7 @@ const Navbar = () => {
     navigate("/register");
   }
   return (
-    <AppBar position="static">
+    <AppBar position="fixed">
       <Toolbar>
         <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
           HOME

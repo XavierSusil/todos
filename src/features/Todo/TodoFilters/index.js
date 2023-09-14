@@ -1,13 +1,89 @@
-import { Button, Grid } from "@mui/material";
+import {
+  Button,
+  Grid,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Popover,
+} from "@mui/material";
 import SortIcon from "@mui/icons-material/Sort";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
   changeStatus as changeStatusAction,
   changeSortOrder,
-} from "../../redux/slices/filterStatusSlice";
+} from "../../../redux/slices/filterStatusSlice";
+import  PopoverFilterSort  from "./PopoverFilterSort";
+
+const SearchBar = () => {
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handlePopover = (e) => {
+    setAnchorEl(e.currentTarget);
+  };
+
+  const closePopover = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? "popoverInSearchBar" : undefined;
+
+  return (
+    <>
+      <Grid container spacing={1}>
+        <Grid item xs={10}>
+          <TextField
+            fullWidth
+            label="Search"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton>
+                    <SearchOutlinedIcon />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <Button
+            variant="contained"
+            onClick={handlePopover}
+            sx={{ height: "100%" }}
+          >
+            <SortIcon />
+            <ArrowDownwardIcon />
+          </Button>
+        </Grid>
+        <Grid item xs={12}>
+          <Popover
+            id={id}
+            open={open}
+            anchorEl={anchorEl}
+            onClose={closePopover}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "center",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "center",
+            }}
+            sx={{ p: 1 }}
+          >
+            <PopoverFilterSort close ={closePopover}/>
+          </Popover>
+        </Grid>
+      </Grid>
+    </>
+  );
+};
 
 const TodoFilters = () => {
   const currentFilter = useSelector((state) => state.filter.filter);
@@ -33,6 +109,7 @@ const TodoFilters = () => {
 
   return (
     <>
+      <SearchBar />
       <Grid
         container
         spacing={1}

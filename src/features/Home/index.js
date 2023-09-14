@@ -14,6 +14,7 @@ const Home = () => {
       <Navbar />
       <Box
         sx={{
+          marginTop: '15vh',
           height: "100%",
           display: "flex",
           justifyContent: "center",

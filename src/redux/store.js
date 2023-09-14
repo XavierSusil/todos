@@ -4,6 +4,7 @@ import {persistReducer , persistStore } from 'redux-persist'
 import loginSlice from './slices/loginSlice'
 import filterStatusSlice from './slices/filterStatusSlice'
 import snackbarSlice from './slices/snackbarSlice'
+import filterSortSlice from './slices/filterSortSlice'
 
 const persistConfig = {
     key:'root',
@@ -15,7 +16,8 @@ const persistedReducer = persistReducer(
     combineReducers({
         login:loginSlice,
         filter:filterStatusSlice,
-        snackbar:snackbarSlice
+        snackbar:snackbarSlice,
+        filterSort:filterSortSlice
     })
 )
 
