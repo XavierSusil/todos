@@ -19,7 +19,10 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { defaultFilterSortState, updateStatus } from "../../../redux/slices/filterSortSlice";
+import {
+  defaultFilterSortState,
+  updateStatus,
+} from "../../../redux/slices/filterSortSlice";
 
 const CheckBoxGenerator = ({ name, state, handle }) => {
   return (
@@ -30,8 +33,10 @@ const CheckBoxGenerator = ({ name, state, handle }) => {
   );
 };
 
-const PopoverFilterSort = ({close}) => {
-  const [checkBoxes,setCheckboxes] = useState(useSelector(state => state.filterSort.status))
+const PopoverFilterSort = ({ close }) => {
+  const [checkBoxes, setCheckboxes] = useState(
+    useSelector((state) => state.filterSort.status)
+  );
 
   const dispatch = useDispatch();
 
@@ -39,10 +44,10 @@ const PopoverFilterSort = ({close}) => {
     const { name, checked } = e.target;
     setCheckboxes((prev) => ({ ...prev, [name]: checked }));
   };
-  
+
   const handleSortChange = (e) => {
-    setCheckboxes((prev) => ({ ...prev, sort: e.currentTarget.value}));
-  }
+    setCheckboxes((prev) => ({ ...prev, sort: e.currentTarget.value }));
+  };
 
   const handleAllChange = () => {
     setCheckboxes((prev) => ({
@@ -61,20 +66,20 @@ const PopoverFilterSort = ({close}) => {
       [name]: prev[name] === "asc" ? "desc" : "asc",
     }));
   };
-  
+
   const handleApplyclick = () => {
     dispatch(updateStatus(checkBoxes));
     close();
-  }
+  };
 
   const handleResetClick = () => {
     setCheckboxes(defaultFilterSortState.status);
-  }
+  };
 
   return (
     <>
       <Grid container spacing={1}>
-        <Grid item xs="auto" spacing={1} sx={{ p: 1 }}>
+        <Grid item xs="auto" sx={{ p: 1 }}>
           <Typography sx={{ textAlign: "center" }}> Sort</Typography>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
             <Paper
@@ -109,7 +114,12 @@ const PopoverFilterSort = ({close}) => {
             </Paper>
             <Paper sx={{ px: 1 }}>
               <FormControl>
-                <RadioGroup defaultValue="recent" value={checkBoxes.sort} name="sort" onChange={handleSortChange}>
+                <RadioGroup
+                  defaultValue="recent"
+                  value={checkBoxes.sort}
+                  name="sort"
+                  onChange={handleSortChange}
+                >
                   <Box
                     sx={{
                       display: "flex",
@@ -120,7 +130,9 @@ const PopoverFilterSort = ({close}) => {
                     <FormControlLabel
                       value="recent"
                       control={<Radio />}
-                      label="Recent"
+                      label={
+                        checkBoxes.recentOrder === "asc" ? "Oldest" : "Recent"
+                      }
                     />
                     <IconButton
                       name="recentOrder"
@@ -225,6 +237,5 @@ const PopoverFilterSort = ({close}) => {
     </>
   );
 };
-
 
 export default PopoverFilterSort;

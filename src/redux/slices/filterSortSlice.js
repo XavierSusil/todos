@@ -13,7 +13,7 @@ export const defaultFilterSortState = {
       sort: "recent",
       priorityOrder: "asc",
       alphabeticalOrder: "asc",
-      recentOrder: "asc",
+      recentOrder: "desc",
     },
   }
 

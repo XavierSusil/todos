@@ -1,13 +1,12 @@
 import { Box, Grid, Typography } from "@mui/material";
 
-import useFilteredTodos from "../../hooks/useFilteredTodos";
-
 import TodoItem from "./TodoItem";
 import CreateTodo from "./CreateTodo";
 import TodoFilters from "./TodoFilters";
+import useFilteredAndSortedTodos from "../../hooks/useFilteredAndSortedTodos";
 
 const Todo = () => {
-  const todos = useFilteredTodos();
+  const todos = useFilteredAndSortedTodos();
 
   return (
     <Grid container rowSpacing={1}>
