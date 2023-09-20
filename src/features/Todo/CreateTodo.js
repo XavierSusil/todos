@@ -16,7 +16,7 @@ import useLocalStorage from "../../hooks/useLocalStorage";
 
 import { createTodoThunk } from "../../redux/slices/loginSlice";
 
-const CreateTodo = () => {
+const CreateTodo = ({close}) => {
   const userid = useSelector((state) => state.login.user.id);
   const [token] = useLocalStorage("token", "");
 
@@ -44,6 +44,7 @@ const CreateTodo = () => {
     data.userid = userid;
 
     dispatch(createTodoThunk({ data, token }));
+    close();
   };
 
   return (

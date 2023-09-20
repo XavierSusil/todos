@@ -17,6 +17,8 @@ import {
   FormLabel,
   RadioGroup,
   FormControlLabel,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 import DoneIcon from "@mui/icons-material/Done";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -28,11 +30,16 @@ import useLocalStorage from "../../hooks/useLocalStorage";
 import { useSelector, useDispatch } from "react-redux";
 import { useState } from "react";
 
-import { deleteTodo, updateTodoStatus ,updateTodoThunk} from "../../redux/slices/loginSlice";
+import {
+  deleteTodo,
+  updateTodoStatus,
+  updateTodoThunk,
+} from "../../redux/slices/loginSlice";
 
 import { updateTodoStatusApi } from "../../api/updateTodoApi";
 import deleteTodoApi from "../../api/deleteTodoApi";
 import { deepPurple, red } from "@mui/material/colors";
+import { enqueue } from "../../redux/slices/snackbarSlice";
 
 const DeleteDialog = ({ id, deleteDialog, setDeleteDialog }) => {
   const [token] = useLocalStorage("token", "");
@@ -42,6 +49,7 @@ const DeleteDialog = ({ id, deleteDialog, setDeleteDialog }) => {
   const handleDelete = async () => {
     await deleteTodoApi(id, token);
     dispatch(deleteTodo(id));
+    dispatch(enqueue({message:"Todo deleted successfully",variant:'success'}))
   };
 
   const closeDeleteDialog = () => {
@@ -59,9 +67,7 @@ const DeleteDialog = ({ id, deleteDialog, setDeleteDialog }) => {
         <DialogContent>
           <Typography> Are you sure you want to delete this Todo?</Typography>
         </DialogContent>
-        <DialogActions
-          sx={{ display: "flex", justifyContent: "space-around" }}
-        >
+        <DialogActions sx={{ display: "flex", justifyContent: "space-around" }}>
           <Button
             onClick={closeDeleteDialog}
             color="primary"
@@ -85,7 +91,7 @@ const DeleteDialog = ({ id, deleteDialog, setDeleteDialog }) => {
   );
 };
 
-const PopoverForm = ({ id, title, description, priority ,close}) => {
+const PopoverForm = ({ id, title, description, priority, close }) => {
   const [titleUse, setTitle] = useState(title);
   const [descriptionUse, setDescription] = useState(description);
   const [priorityUse, setPriority] = useState(priority);
@@ -203,10 +209,12 @@ const TodoItem = ({ id }) => {
 
   const handleDoneButton = async () => {
     updateStatusHelper("COMPLETED");
+    dispatch(enqueue({message:'Todo Marked as done',variant:'success'}))
   };
 
   const handleUndoButton = async () => {
     updateStatusHelper("IN_PROGRESS");
+    dispatch(enqueue({message:'Todo Marked as not done',variant:'success'}))
   };
 
   const handleShowDescription = () => {
@@ -229,7 +237,7 @@ const TodoItem = ({ id }) => {
   const popOverId = isPopOverOpen ? "pop" + id : undefined;
 
   return (
-    <Paper elevation={1}>
+    <Paper elevation={1}  sx ={{width:'100%'}}>
       <Grid container>
         <Grid
           item
@@ -249,22 +257,28 @@ const TodoItem = ({ id }) => {
             }}
             onClick={handleShowDescription}
           >
-            <Radio checked color={priority === "LOW" ? "green" : redOrYellow} />{" "}
+            <Radio checked color={priority === "LOW" ? "green" : redOrYellow} />
             {todo?.title}
           </Typography>
           <Box>
             {todo?.status === "COMPLETED" ? (
-              <Button onClick={handleUndoButton} sx={{ minWidth: "0px" }}>
-                <UndoIcon fontSize="small" color="success" />
-              </Button>
+              <Tooltip title="Unmark as done">
+                <IconButton onClick={handleUndoButton}>
+                  <UndoIcon fontSize="small" color="success" />
+                </IconButton>
+              </Tooltip>
             ) : (
-              <Button onClick={handleDoneButton} sx={{ minWidth: "0px" }}>
-                <DoneIcon fontSize="small" color="success" />
-              </Button>
+              <Tooltip title="Mark as done">
+                <IconButton onClick={handleDoneButton}>
+                  <DoneIcon fontSize="small" color="success" />
+                </IconButton>
+              </Tooltip>
             )}
-            <Button onClick={openDeleteDialog} sx={{ minWidth: "0px" }}>
-              <ClearIcon fontSize="small" color="error" />
-            </Button>
+            <Tooltip title="Delete To-do">
+              <IconButton onClick={openDeleteDialog}>
+                <ClearIcon fontSize="small" color="error" />
+              </IconButton>
+            </Tooltip>
           </Box>
         </Grid>
         <Grid item>

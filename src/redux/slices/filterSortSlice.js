@@ -6,7 +6,7 @@ export const defaultFilterSortState = {
       low: false,
       medium: false,
       high: false,
-      progress: false,
+      progress: true,
       completed: false,
       priority: false,
       all: false,

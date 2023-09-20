@@ -1,77 +1,115 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Typography, Button, Dialog } from "@mui/material";
 
 import TodoItem from "./TodoItem";
 import CreateTodo from "./CreateTodo";
 import TodoFilters from "./TodoFilters";
 import useFilteredAndSortedTodos from "../../hooks/useFilteredAndSortedTodos";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { useState } from "react";
 
 const Todo = () => {
+  const [openCreateTodoDialog, setCreateTodoDialog] = useState(false);
+
+  const handleCreateTodoDialogOpen = () => {
+    setCreateTodoDialog(true);
+  };
+
+  const handleCreateTodoDialogClose = () => {
+    setCreateTodoDialog(false);
+  };
+
   const todos = useFilteredAndSortedTodos();
 
   return (
-    <Grid container rowSpacing={1}>
-      <Grid
-        item
-        xs={12}
-        md={6}
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 1,
-          alignItems: "center",
-        }}
-      >
-        <CreateTodo />
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        md={6}
+    <>
+      <Box
         sx={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          width: "80%",
         }}
       >
-        <Typography color="primary" component="h3" variant="h6">
-          TODO LIST
-        </Typography>
+        <Box
+          sx={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
+        >
+          <Button
+            variant="contained"
+            onClick={handleCreateTodoDialogOpen}
+            sx={{
+              borderRadius: 5,
+              display: "flex",
+              gap: 1,
+              alignItems: "center",
+            }}
+          >
+            <AddCircleOutlineIcon />
+            <Typography> Todo</Typography>
+          </Button>
+        </Box>
         <Box
           sx={{
-            width: "85%",
             display: "flex",
             flexDirection: "column",
-            gap: 2,
+            gap: 1,
+            alignItems: "center",
+            width: "100%",
           }}
         >
-          <TodoFilters />
+          <Typography
+            color="primary"
+            variant="h3"
+            fontFamily="'Cormorant Garamond', serif"
+          >
+            TODO LIST
+          </Typography>
           <Box
             sx={{
-              overflowY: "auto",
               display: "flex",
               flexDirection: "column",
               gap: 2,
-              p: 1,
-              maxHeight: "50vh",
-              "&::-webkit-scrollbar": {
-                width: "0.3em",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                borderRadius: "0.6em",
-                backgroundColor: "#888",
-              },
-              "&::-webkit-scrollbar-thumb:hover": {
-                background: "#555",
-              },
+              maxWidth: "50vw",
+              alignItems: "center",
             }}
           >
-            {todos?.map((val) => (
-              <TodoItem key={val.id} id={val.id} />
-            ))}
+            <TodoFilters />
+            <Box
+              sx={{
+                overflowY: "auto",
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                p: 1,
+                width: "95%",
+                maxHeight: "50vh",
+                "&::-webkit-scrollbar": {
+                  width: "0.3em",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  borderRadius: "0.6em",
+                  backgroundColor: "#888",
+                },
+                "&::-webkit-scrollbar-thumb:hover": {
+                  background: "#555",
+                },
+              }}
+            >
+              {todos?.map((val) => (
+                <TodoItem key={val.id} id={val.id} />
+              ))}
+            </Box>
           </Box>
         </Box>
-      </Grid>
-    </Grid>
+        <Dialog
+          open={openCreateTodoDialog}
+          onClose={handleCreateTodoDialogClose}
+          fullWidth
+          maxWidth="sm"
+        >
+          <CreateTodo close={handleCreateTodoDialogClose} />
+        </Dialog>
+      </Box>
+    </>
   );
 };
 

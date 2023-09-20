@@ -5,6 +5,7 @@ import Login from "./features/Login";
 import Register from "./features/Register";
 
 function App() {
+
   return (
     <Routes>
       <Route exact path="/" element={<Home />} />

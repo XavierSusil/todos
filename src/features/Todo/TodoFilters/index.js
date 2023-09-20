@@ -29,7 +29,7 @@ const TodoFilters = () => {
 
   return (
     <>
-      <Grid container spacing={1}>
+      <Grid container spacing={1} >
         <Grid item xs={10}>
           <TextField
             fullWidth
@@ -49,7 +49,7 @@ const TodoFilters = () => {
           <Button
             variant="contained"
             onClick={handlePopover}
-            sx={{ height: "100%" }}
+            sx={{ height: "100%",width:'100%' }}
           >
             <SortIcon />
             <ArrowDownwardIcon />
