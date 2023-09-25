@@ -12,9 +12,15 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { useState } from "react";
 
 import  PopoverFilterSort  from "./PopoverFilterSort";
+import useDebounceSearch from "../../../hooks/useDebounceSearch";
 
 const TodoFilters = () => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const setSearchTerm = useDebounceSearch('',1000);
+  
+  const handleSearchChange =  (e) => {
+    setSearchTerm(e.currentTarget.value);
+  }
 
   const handlePopover = (e) => {
     setAnchorEl(e.currentTarget);
@@ -34,6 +40,7 @@ const TodoFilters = () => {
           <TextField
             fullWidth
             label="Search"
+            onChange={handleSearchChange}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">

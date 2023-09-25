@@ -15,6 +15,9 @@ export const defaultFilterSortState = {
       alphabeticalOrder: "asc",
       recentOrder: "desc",
     },
+    searchTerms: {
+      todo:''
+    }
   }
 
 const filterSortSlice = createSlice({
@@ -23,10 +26,20 @@ const filterSortSlice = createSlice({
   reducers: {
     updateStatus: (state,action) => {
         state.status = action.payload;
+    },
+    /**
+     * 
+     * @param {*} state 
+     * @param {*} action
+     * 
+     * updates the  serachTerm used in  serach bar for  todos 
+     */
+    updateTodoSearchTerm: (state,action) => {
+      state.searchTerms.todo = action.payload;
     }
   }
 });
 
 export default filterSortSlice.reducer;
 
-export const {updateStatus} = filterSortSlice.actions;
+export const {updateStatus,updateTodoSearchTerm} = filterSortSlice.actions;

@@ -78,7 +78,7 @@ const PopoverFilterSort = ({ close }) => {
 
   return (
     <>
-      <Grid container spacing={1}>
+      <Grid container spacing={1} sx ={{p:2}}>
         <Grid item xs="auto" sx={{ p: 1 }}>
           <Typography sx={{ textAlign: "center" }}> Sort</Typography>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>

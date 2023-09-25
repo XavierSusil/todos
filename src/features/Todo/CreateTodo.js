@@ -58,7 +58,7 @@ const CreateTodo = ({close}) => {
         width: "95%",
         gap: 1,
         marginTop: "2px",
-        p: 1,
+        p: 2,
       }}
     >
       <Typography

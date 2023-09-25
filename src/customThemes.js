@@ -1,7 +1,7 @@
-import { createTheme } from "@mui/material";
+import { createTheme, responsiveFontSizes } from "@mui/material";
 
 
-const theme = createTheme({
+let theme = createTheme({
     palette: {
         primary: {
             main: "#4D4FB2"
@@ -23,5 +23,7 @@ const theme = createTheme({
         fontFamily: "Fira code, Poppins, sans-serif"
     }
 })
+
+theme = responsiveFontSizes(theme)
 
 export default theme;

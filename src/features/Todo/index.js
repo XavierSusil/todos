@@ -3,9 +3,9 @@ import { Box, Typography, Button, Dialog } from "@mui/material";
 import TodoItem from "./TodoItem";
 import CreateTodo from "./CreateTodo";
 import TodoFilters from "./TodoFilters";
-import useFilteredAndSortedTodos from "../../hooks/useFilteredAndSortedTodos";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { useState } from "react";
+import useSearchedTodos from "./useSearchedTodos";
 
 const Todo = () => {
   const [openCreateTodoDialog, setCreateTodoDialog] = useState(false);
@@ -18,7 +18,7 @@ const Todo = () => {
     setCreateTodoDialog(false);
   };
 
-  const todos = useFilteredAndSortedTodos();
+  const todos = useSearchedTodos();
 
   return (
     <>
@@ -68,6 +68,7 @@ const Todo = () => {
               display: "flex",
               flexDirection: "column",
               gap: 2,
+              width:'100%',
               maxWidth: "50vw",
               alignItems: "center",
             }}
@@ -104,7 +105,7 @@ const Todo = () => {
           open={openCreateTodoDialog}
           onClose={handleCreateTodoDialogClose}
           fullWidth
-          maxWidth="sm"
+          maxWidth="md"
         >
           <CreateTodo close={handleCreateTodoDialogClose} />
         </Dialog>
