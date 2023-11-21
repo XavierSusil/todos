@@ -17,11 +17,18 @@ let theme = createTheme({
         },
         red: {
             main: "#FF0000"
+        },
+        white: {
+            main:"#FFFFFF"
         }
     },
     typography :{
-        fontFamily: "Fira code, Poppins, sans-serif"
-    }
+        //fontFamily: "Fira code, Poppins, sans-serif"
+        fontFamily:"Poppins, Roboto, sans-serif"
+    },
+    transitions: {
+        create: (props) => `transform 0.1s ease-out`,
+      },
 })
 
 theme = responsiveFontSizes(theme)

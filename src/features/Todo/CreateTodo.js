@@ -1,43 +1,55 @@
 import {
   Box,
   Button,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
   TextField,
   Typography,
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
 } from "@mui/material";
+import propTypes from "prop-types";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
-import extractDataFromForm from "../../utils/extractDataFromForm";
 import useLocalStorage from "../../hooks/useLocalStorage";
+import extractDataFromForm from "../../utils/extractDataFromForm";
 
+import AngleUpArrowIcon from "../../components/icons/AngleUpArrowIcon";
+import DoubleUpArrowIcon from "../../components/icons/DoubleUpArrowIcon";
+import TripleUpArrowIcon from "../../components/icons/TripleUpArrowIcon";
 import { createTodoThunk } from "../../redux/slices/loginSlice";
 
 const CreateTodo = ({close}) => {
+  const titleRef = useRef(null)
   const userid = useSelector((state) => state.login.user.id);
   const [token] = useLocalStorage("token", "");
 
-  const [titleState, setTitle] = useState("");
-  const [descriptionState, setDescription] = useState("");
+  const [titleState, setTitleState] = useState("");
+  const [descriptionState, setDescriptionState] = useState("");
 
   const dispatch = useDispatch();
 
   const changeTitle = (e) => {
-    setTitle(e.target.value);
+    setTitleState(e.target.value);
   };
 
   const changeDescription = (e) => {
-    setDescription(e.target.value);
+    setDescriptionState(e.target.value);
   };
+
+  useEffect(() => {
+
+      console.log(titleRef);
+      titleRef.current.focus();
+
+  },[])
 
   const handleTodoSubmit = async (e) => {
     e.preventDefault();
 
-    setTitle("");
-    setDescription("");
+    setTitleState("");
+    setDescriptionState("");
 
     const formData = new FormData(e.currentTarget);
     const data = extractDataFromForm(formData);
@@ -82,6 +94,7 @@ const CreateTodo = ({close}) => {
         rows={1}
         fullWidth
         required
+        inputRef={titleRef}
       />
       <TextField
         label="Description"
@@ -93,27 +106,27 @@ const CreateTodo = ({close}) => {
         multiline
         rows={4}
         fullWidth
-        required
       />
       <FormControl>
         <FormLabel>Priority</FormLabel>
         <RadioGroup name="priority" defaultValue="low" row>
           <FormControlLabel
             value="LOW" // values should be in capital letters 
-            control={<Radio color="green" />}
+            control={<Radio icon={<AngleUpArrowIcon/>} checkedIcon={<AngleUpArrowIcon color="success" />} />}
             label="low"
           />
           <FormControlLabel
             value="MEDIUM"
-            control={<Radio color="yellow" />}
+            control={<Radio  icon={<DoubleUpArrowIcon />} checkedIcon={<DoubleUpArrowIcon color="warning"/>} />}
             label="medium"
           />
           <FormControlLabel
             value="HIGH" 
-            control={<Radio color="red" />}
+            control={<Radio icon={<TripleUpArrowIcon/>} checkedIcon={<TripleUpArrowIcon color="error"/>} />}
             label="high"
           />
         </RadioGroup>
+        <Typography fontSize="small" ><i>"low"</i>&nbsp; is default </Typography>
       </FormControl>
 
       <Button type="submit" variant="contained" sx={{ width: "50%" }}>
@@ -122,5 +135,10 @@ const CreateTodo = ({close}) => {
     </Box>
   );
 };
+
+CreateTodo.propTypes = {
+  close: propTypes.func.isRequired,
+  open: propTypes.bool.isRequired,
+}
 
 export default CreateTodo;

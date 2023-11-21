@@ -39,10 +39,19 @@ export const createTodoThunk = createAsyncThunk(
   }
 );
 
+/**
+ *    Structure of data => 
+ *    data : {
+      title: "title",
+      description: "description",
+      priority: "priority",
+    };
+ */
+
 export const updateTodoThunk = createAsyncThunk(
   "login/updateTodoThunk",
-  async ({id, data, token }, { rejectWithValue, dispatch }) => {
-    const response = await updateTodoApi(id,data, token);
+  async ({ id, data, token }, { rejectWithValue, dispatch }) => {
+    const response = await updateTodoApi(id, data, token);
     console.log(response);
     if (response.hasOwnProperty("title")) {
       dispatch(enqueue({ message: "Todo Updated", variant: "success" }));
@@ -73,15 +82,11 @@ const loginSlice = createSlice({
     addTodo: addTodoReducer,
 
     updateTodoStatus: (state, action) => {
-      if (state.isLoggedIn) {
-        state.user.todos.find((t) => t.id === action.payload.id).status =
-          action.payload.status;
-      }
+      state.user.todos.find((t) => t.id === action.payload.id).status =
+        action.payload.status;
     },
     deleteTodo: (state, action) => {
-      state.user.todos = state.user.todos.filter(
-        (t) => t.id !== action.payload
-      );
+      state.user.todos.find((t) => t.id === action.payload).status = "DELETED";
     },
   },
   extraReducers: (builder) => {
@@ -97,6 +102,9 @@ const loginSlice = createSlice({
       });
   },
 });
+
+export const selectTodoById = (state, id) =>
+  state?.login?.user?.todos?.find((t) => t.id === id);
 
 export const { login, logout, addTodo, updateTodoStatus, deleteTodo } =
   loginSlice.actions;

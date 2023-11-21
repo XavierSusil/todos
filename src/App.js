@@ -1,8 +1,9 @@
-import { Routes, Route } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
 import Home from "./features/Home";
 import Login from "./features/Login";
 import Register from "./features/Register";
+import Experiment from "./experiments/Experiment";
 
 function App() {
 
@@ -11,6 +12,7 @@ function App() {
       <Route exact path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/experiment" element={<Experiment />} />
     </Routes>
   );
 }

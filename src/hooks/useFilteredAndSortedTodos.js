@@ -22,6 +22,9 @@ const useFilteredAndSortedTodos = () => {
 
   useEffect(() => {
     let intermediateData = [...todos];
+    intermediateData = intermediateData.filter(
+      (val) => !val.status.startsWith("DELETED")
+    );
 
     if (
       filterSortStatus.low ||
@@ -74,7 +77,7 @@ const useFilteredAndSortedTodos = () => {
         return 0;
       };
 
-      const compareDesc = (a, b) => {
+      let compareDesc = (a, b) => {
         let name1 = extractName(a.title);
         let name2 = extractName(b.title);
 

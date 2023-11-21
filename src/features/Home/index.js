@@ -1,10 +1,10 @@
-import { Typography, Box } from "@mui/material";
-import Navbar from "../../components/Navbar";
-import Todo from "../Todo";
-import { useSelector } from "react-redux";
-import useCustomSnackbar from "../../hooks/useCustomSnackbar";
-import { useNavigate } from "react-router-dom"; // Import useHistory
+import { Box } from "@mui/material";
 import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom"; // Import useHistory
+import Navbar from "../../components/Navbar";
+import useCustomSnackbar from "../../hooks/useCustomSnackbar";
+import Todo from "../Todo";
 
 const Home = () => {
   const login = useSelector((state) => state.login.isLoggedIn);
@@ -23,7 +23,7 @@ const Home = () => {
         <Navbar />
         <Box
           sx={{
-            marginTop: "15vh",
+            marginTop: "2vh",
             height: "100%",
             display: "flex",
             justifyContent: "center",

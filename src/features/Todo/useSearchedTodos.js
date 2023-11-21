@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import useFilteredAndSortedTodos from "../../hooks/useFilteredAndSortedTodos";
 import { useSelector } from "react-redux";
+import useFilteredAndSortedTodos from "../../hooks/useFilteredAndSortedTodos";
 
 const useSearchedTodos = () => {
   const todos = useFilteredAndSortedTodos();
