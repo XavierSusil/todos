@@ -1,8 +1,8 @@
-import { AppBar, Toolbar, Typography, Box } from "@mui/material";
+import { AppBar, Box, Toolbar, Typography } from "@mui/material";
 
-import { useRef, useEffect, forwardRef, useState } from "react";
-import { SortComponent, FilterComponent } from "./TodoFilters";
+import { useEffect, useRef, useState } from "react";
 import SearchBar2, { SearchBar } from "./SearchBar2";
+import { FilterComponent, SortComponent } from "./TodoFilters";
 import { UserDetails } from "./UserDetails";
 
 const Navbar = () => {

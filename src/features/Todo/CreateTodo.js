@@ -137,8 +137,7 @@ const CreateTodo = ({close}) => {
 };
 
 CreateTodo.propTypes = {
-  close: propTypes.func.isRequired,
-  open: propTypes.bool.isRequired,
+  close: propTypes.func.isRequired
 }
 
 export default CreateTodo;

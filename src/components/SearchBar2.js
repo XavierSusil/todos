@@ -1,19 +1,20 @@
-import {
-  IconButton,
-  Tooltip,
-  Box,
-  TextField,
-  InputAdornment,
-} from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
-import { useState, useRef, useEffect, forwardRef } from "react";
+import SearchIcon from "@mui/icons-material/Search";
+import {
+  Box,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Tooltip,
+} from "@mui/material";
+import { forwardRef, useEffect, useRef, useState } from "react";
 
-import useDebounceSearch from "../hooks/useDebounceSearch";
+import propTypes from "prop-types";
 import { useSelector } from "react-redux";
+import useDebounceSearch from "../hooks/useDebounceSearch";
 import { selectTodoSearchTerm } from "../redux/slices/filterSortSlice";
 
-export const SearchBar = forwardRef(({showAdornment}, ref) => {
+export const SearchBar = forwardRef(({ showAdornment }, ref) => {
   const setSearchTerm = useDebounceSearch("", 25);
   const searchTerm = useSelector(selectTodoSearchTerm);
   const handleSearchChange = (e) => {
@@ -31,11 +32,11 @@ export const SearchBar = forwardRef(({showAdornment}, ref) => {
         endAdornment: (
           <InputAdornment position="end">
             {(searchTerm !== "" || showAdornment) && (
-             <Tooltip title="clear">
-               <IconButton onClick={() => setSearchTerm("")}>
-                <ClearIcon />
-              </IconButton>
-             </Tooltip>
+              <Tooltip title="clear">
+                <IconButton onClick={() => setSearchTerm("")}>
+                  <ClearIcon />
+                </IconButton>
+              </Tooltip>
             )}
           </InputAdornment>
         ),
@@ -47,7 +48,10 @@ export const SearchBar = forwardRef(({showAdornment}, ref) => {
   );
 });
 
-const SearchBar2 = ({showAdornment,width}) => {
+SearchBar.propTypes = {
+  showAdornment: propTypes.bool,
+};
+const SearchBar2 = ({ showAdornment, width }) => {
   const [showSearchBar, setShowSearchBar] = useState(false);
 
   const searchBarRef = useRef();
@@ -89,9 +93,9 @@ const SearchBar2 = ({showAdornment,width}) => {
   }, [showSearchBar]);
 
   return (
-    <Box sx={showSearchBar ? {width:{width}} : {}}>
+    <Box sx={showSearchBar ? { width: { width } } : {}}>
       {showSearchBar ? (
-        <SearchBar ref={searchBarRef} showAdornment={showAdornment}/>
+        <SearchBar ref={searchBarRef} showAdornment={showAdornment} />
       ) : (
         <Tooltip title="Search List">
           <IconButton
@@ -108,6 +112,11 @@ const SearchBar2 = ({showAdornment,width}) => {
       )}
     </Box>
   );
-}
+};
+
+SearchBar2.propTypes = {
+  showAdornment: propTypes.bool,
+  width: propTypes.number,
+};
 
 export default SearchBar2;

@@ -4,11 +4,12 @@ import {
   Button,
   Dialog,
   Grid,
+  Paper,
   Typography,
 } from "@mui/material";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import PropTypes from "prop-types";
+import propTypes from "prop-types";
 import React, { useState } from "react";
 import useSmallScreen from "../../hooks/useSmallScreen";
 import CreateTodo from "./CreateTodo";
@@ -16,13 +17,23 @@ import DeletedTodos from "./DeletedTodos";
 import TodoItem from "./TodoItem";
 import useSearchedTodos from "./useSearchedTodos";
 
-const CreateTodoWindow = ({ setCreateTodoDialog, isSmallScreen }) => {
+const CreateTodoWindow = ({
+  setCreateTodoDialog,
+  isSmallScreen,
+  justifyCenter,
+}) => {
   const handleCreateTodoDialogOpen = () => {
     setCreateTodoDialog(true);
   };
 
   return (
-    <Box sx={{ width: "100%", display: "flex", justifyContent: "flex-end" }}>
+    <Box
+      sx={{
+        width: "100%",
+        display: "flex",
+        justifyContent: justifyCenter ? "center" : "flex-end",
+      }}
+    >
       <Button
         variant="contained"
         onClick={handleCreateTodoDialogOpen}
@@ -41,8 +52,47 @@ const CreateTodoWindow = ({ setCreateTodoDialog, isSmallScreen }) => {
 };
 
 CreateTodoWindow.propTypes = {
-  isSmallScreen: PropTypes.bool,
-  setCreateTodoDialog: PropTypes.func,
+  isSmallScreen: propTypes.bool,
+  setCreateTodoDialog: propTypes.func,
+  justifyCenter: propTypes.bool,
+};
+
+const EmptyTodoList = ({ setCreateTodoDialog }) => {
+  return (
+    <Box
+      sx={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Paper
+        sx={{
+          width: "50%",
+          height: "50%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "column",
+          gap: 1,
+        }}
+        elevation={24}
+      >
+        <Typography variant="h5">Todo List is empty </Typography>
+        <Typography variant="subtitle2"> Click below to Add a new todo</Typography>
+        <CreateTodoWindow
+          setCreateTodoDialog={setCreateTodoDialog}
+          justifyCenter
+        />
+      </Paper>
+    </Box>
+  );
+};
+
+EmptyTodoList.propTypes = {
+  setCreateTodoDialog: propTypes.func.isRequired,
 };
 
 const Todo = () => {
@@ -54,7 +104,6 @@ const Todo = () => {
   };
 
   const todos = useSearchedTodos();
-
   return (
     <Box
       sx={{
@@ -64,7 +113,7 @@ const Todo = () => {
       }}
     >
       {!isSmallScreen && (
-        <CreateTodoWindow setCreateTodoDialog={setOpenCreateTodoDialog} open ={openCreateTodoDialog} />
+        <CreateTodoWindow setCreateTodoDialog={setOpenCreateTodoDialog} />
       )}
       <Grid container spacing={1}>
         <Grid item xs={8}>
@@ -78,7 +127,7 @@ const Todo = () => {
               gap: 2,
               p: 1,
               width: "95%",
-              maxHeight: "70vh",
+              height: "70vh",
               "&::-webkit-scrollbar": {
                 width: "0.3em",
               },
@@ -94,13 +143,13 @@ const Todo = () => {
             {todos?.map((val) => (
               <TodoItem key={val.id} id={val.id} />
             ))}
-            {
-              todos?.length === 0 && <Typography>Todo List is empty </Typography>
-            }
+            {todos?.length === 0 && (
+              <EmptyTodoList setCreateTodoDialog={setOpenCreateTodoDialog} />
+            )}
           </Box>
         </Grid>
         <Grid item xs={4}>
-              <DeletedTodos />
+          <DeletedTodos />
         </Grid>
       </Grid>
       <Dialog

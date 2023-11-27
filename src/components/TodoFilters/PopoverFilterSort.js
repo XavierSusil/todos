@@ -1,19 +1,19 @@
 import {
-  Grid,
-  IconButton,
-  Typography,
+  Box,
+  Checkbox,
+  FormControl,
   FormControlLabel,
   FormGroup,
-  Checkbox,
+  Grid,
+  IconButton,
   Paper,
-  Box,
   Radio,
   RadioGroup,
-  FormControl,
+  Typography,
 } from "@mui/material";
 
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
@@ -64,7 +64,7 @@ export const PopoverSort = () => {
   }, [checkBoxes, dispatch]);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 1,p:1 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, p: 1 }}>
       <Paper
         sx={{
           px: 1,
@@ -158,7 +158,6 @@ export const PopoverSort = () => {
   );
 };
 
-
 export const PopoverFilter = () => {
   const [checkBoxes, setCheckBoxes] = useState(
     useSelector((state) => state.filterSort.status)
@@ -185,7 +184,7 @@ export const PopoverFilter = () => {
   }, [checkBoxes, dispatch]);
 
   return (
-    <Grid container spacing={1} style={{padding:'1rem'}}>
+    <Grid container spacing={1} style={{ padding: "1rem" }}>
       <Grid item xs={6}>
         <Typography sx={{ textAlign: "center" }}>Priority</Typography>
         <FormGroup>

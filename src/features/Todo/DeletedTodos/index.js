@@ -6,39 +6,35 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  IconButton,
-  Paper,
-  Tooltip,
   Typography,
 } from "@mui/material";
 
-import deleteTodoApi from "../../../api/deleteTodoApi";
-import { updateTodoStatusApi } from "../../../api/updateTodoApi";
 
-import { DeleteForever } from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import RestoreIcon from "@mui/icons-material/Restore";
 import { red } from "@mui/material/colors";
 import propTypes from "prop-types";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import useLocalStorage from "../../../hooks/useLocalStorage";
-import { deleteTodo, updateTodoStatus } from "../../../redux/slices/loginSlice";
+import {
+  deleteTodoBulkThunk,
+  updateTodoStatusBulkThunk
+} from "../../../redux/slices/loginSlice";
 import { enqueue } from "../../../redux/slices/snackbarSlice";
+import { DeletedItem, DeletedItemUI } from "./DeletedItem";
 import useDeletedTodos from "./useDeletedTodos";
 
-export const DeleteDialog = ({ id, deleteDialog, setDeleteDialog }) => {
-  const [token] = useLocalStorage("token", "");
-
-  const dispatch = useDispatch();
-
-  const handleDelete = async () => {
-    await deleteTodoApi(id, token);
-    dispatch(deleteTodo(id));
-    dispatch(
-      enqueue({ message: "Todo deleted Permanently", variant: "success" })
-    );
+export const DeleteDialog = ({
+  deleteDialog,
+  setDeleteDialog,
+  callbackFunction,
+  message,
+  buttonName,
+}) => {
+  const handleConfirmButtonlick = () => {
+    callbackFunction();
+    setDeleteDialog(false);
   };
 
   const closeDeleteDialog = () => {
@@ -53,10 +49,7 @@ export const DeleteDialog = ({ id, deleteDialog, setDeleteDialog }) => {
         </Avatar>
       </DialogTitle>
       <DialogContent>
-        <Typography>
-          {" "}
-          Are you sure you want to delete this Todo Permanently?
-        </Typography>
+        <Typography>{message}</Typography>
       </DialogContent>
       <DialogActions sx={{ display: "flex", justifyContent: "space-around" }}>
         <Button
@@ -68,13 +61,13 @@ export const DeleteDialog = ({ id, deleteDialog, setDeleteDialog }) => {
           Cancel
         </Button>
         <Button
-          onClick={handleDelete}
+          onClick={handleConfirmButtonlick}
           color="secondary"
           autoFocus
           variant="contained"
           fullWidth
         >
-          Delete
+          {buttonName}
         </Button>
       </DialogActions>
     </Dialog>
@@ -82,126 +75,138 @@ export const DeleteDialog = ({ id, deleteDialog, setDeleteDialog }) => {
 };
 
 DeleteDialog.propTypes = {
-  id: propTypes.number.isRequired,
   deleteDialog: propTypes.bool.isRequired,
   setDeleteDialog: propTypes.func.isRequired,
+  callbackFunction: propTypes.func.isRequired,
+  message: propTypes.string.isRequired,
+  buttonName: propTypes.string.isRequired,
 };
 
-const DeletedItem = ({ id, title, status }) => {
+const DeletedTodoListUI = (props) => {
   const [token] = useLocalStorage("token", "");
   const dispatch = useDispatch();
+
   const [deleteDialogState, setDeleteDialogState] = useState(false);
-  const [isHovered,setIsHovered] = useState(false);
 
-  const updateStatusHelper = async (state) => {
-    await updateTodoStatusApi(id, state, token);
-    dispatch(updateTodoStatus({ id, status: state }));
+  const handleRestoreAllClick = async () => {
+    const data = [];
+    props.todos.forEach((element) => {
+      data.push({
+        id: element.id,
+        status: {
+          status: element.status.slice("DELETED_".length),
+        },
+      });
+    });
+    dispatch(updateTodoStatusBulkThunk({ data, token }));
   };
 
-  const handleRestoreButton = () => {
-    if (status === "DELETED_COMPLETED") updateStatusHelper("COMPLETED");
-    else updateStatusHelper("IN_PROGRESS");
-  };
-
-  const handlePermanentDeleteButton = () => {
+  const handleDeleteAllButton = () => {
     setDeleteDialogState(true);
   };
 
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-  }
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-  }
+  const handleDeleteAllCallback = async () => {
+    const data = props.todos.map((element) => element.id);
+    dispatch(deleteTodoBulkThunk({ data, token }));
+    dispatch(
+      enqueue({ message: "todos deleted permanently", variant: "success" })
+    );
+  };
 
   return (
-    <Paper key={title} sx={{ p: 1 }} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} >
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Typography
-          sx={{
-            textDecoration:
-              status === "DELETED_COMPLETED" ? "line-through" : "",
-            opacity: status === "DELETED_COMPLETED" ?0.5:1,
-          }}
-        >
-          {title}
-        </Typography>
-<Box>
-          <Tooltip title="Restore">
-            <IconButton color="primary">
-              <RestoreIcon onClick={handleRestoreButton}  fontSize="small"/>
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete permanently">
-            <IconButton color="error" onClick={handlePermanentDeleteButton}>
-              <DeleteForever  fontSize="small"/>
-            </IconButton>
-          </Tooltip>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 1,
+        p: 1,
+        overflowY: "auto",
+        maxHeight: "70vh",
+        "&::-webkit-scrollbar": {
+          width: "0.3em",
+        },
+        "&::-webkit-scrollbar-thumb": {
+          borderRadius: "0.6em",
+          backgroundColor: "#888",
+        },
+        "&::-webkit-scrollbar-thumb:hover": {
+          background: "#555",
+        },
+      }}
+    >
+      <Typography sx={{ fontWeight: "bold" }}>
+        Recently Deleted Todos
+      </Typography>
+      {props?.todos?.length !== 0 && (
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <Button
+            color="primary"
+            variant="contained"
+            fullWidth
+            onClick={handleRestoreAllClick}
+          >
+            restore all
+          </Button>
+          <Button
+            color="secondary"
+            variant="contained"
+            fullWidth
+            onClick={handleDeleteAllButton}
+          >
+            delete all
+          </Button>
         </Box>
-        
-      </Box>
+      )}
+      {props?.todos?.map((todo) => (
+        <DeletedItem
+          key={todo.title}
+          title={todo.title}
+          id={todo.id}
+          status={todo.status}
+          minHeight={props.minHeight}
+        />
+      ))}
+      {props?.todos?.length === 0 && (
+        <Typography>No items in the Recently Deleted List </Typography>
+      )}
       <DeleteDialog
-        id={id}
         deleteDialog={deleteDialogState}
         setDeleteDialog={setDeleteDialogState}
+        callbackFunction={handleDeleteAllCallback}
+        message="Are you sure you want to delete All the  Todos Permanently?"
+        buttonName="delete all"
       />
-    </Paper>
+    </Box>
   );
 };
 
-DeletedItem.propTypes = {
-  id: propTypes.number.isRequired,
-  title: propTypes.string.isRequired,
-  status: propTypes.string.isRequired,
+DeletedTodoListUI.propTypes = {
+  todos: propTypes.array,
+  minHeight: propTypes.number,
 };
 
 const DeletedTodos = () => {
   const todos = useDeletedTodos();
+
+  const [minHeight, setMinHeight] = useState(0);
+  const HoveredDeletedItemRef = useRef();
+
+  useEffect(() => {
+    setMinHeight(
+      HoveredDeletedItemRef?.current?.getBoundingClientRect()?.height
+    );
+  }, []);
+
   return (
-    
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 1,
-          p: 1,
-          overflowY: "auto",
-          maxHeight: "70vh",
-          "&::-webkit-scrollbar": {
-            width: "0.3em",
-          },
-          "&::-webkit-scrollbar-thumb": {
-            borderRadius: "0.6em",
-            backgroundColor: "#888",
-          },
-          "&::-webkit-scrollbar-thumb:hover": {
-            background: "#555",
-          },
-        }}
-      >
-        <Typography sx={{ fontWeight: "bold" }}>
-          Recently Deleted Todos
-        </Typography>
-        {todos?.map((todo) => (
-          <DeletedItem
-            key={todo.title}
-            title={todo.title}
-            id={todo.id}
-            status={todo.status}
-          />
-        ))}
-        {todos?.length === 0 && (
-          <Typography>No items in the Recently Deleted List </Typography>
-        )}
-      </Box>
+    <>
+      {!minHeight ? (
+        <div ref={HoveredDeletedItemRef}>
+          <DeletedItemUI isHovered={true} />
+        </div>
+      ) : (
+        <DeletedTodoListUI todos={todos} minHeight={minHeight} />
+      )}
+    </>
   );
 };
 

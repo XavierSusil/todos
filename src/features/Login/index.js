@@ -74,7 +74,7 @@ const Login = () => {
                 <LockOutlinedIcon />
               </Avatar>
               <Typography component="h1" variant="h5">
-                lOGIN
+                {"LOGIN".toUpperCase()}
               </Typography>
               <Box
                 component="form"

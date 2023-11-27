@@ -1,17 +1,11 @@
-import {
-  Typography,
-  Button,
-  Box,
-  Popover,
-  Tooltip
-} from "@mui/material";
-import useLocalStorage from "../hooks/useLocalStorage";
-import { enqueueSnackbar } from "notistack";
-import { useDispatch, useSelector } from "react-redux";
-import { logout as clearLogin } from "../redux/slices/loginSlice";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import MenuIcon from "@mui/icons-material/Menu";
+import { Box, Button, Popover, Tooltip, Typography } from "@mui/material";
+import { enqueueSnackbar } from "notistack";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import useLocalStorage from "../hooks/useLocalStorage";
+import { logout as clearLogin } from "../redux/slices/loginSlice";
 
 export const UserDetails = () => {
   const username = useSelector((state) => state.login.user?.username);

@@ -1,14 +1,10 @@
-import {
-  IconButton, Popover,
-  Tooltip
-} from "@mui/material";
+import { IconButton, Popover, Tooltip } from "@mui/material";
 
-
-import ImportExportIcon from '@mui/icons-material/ImportExport';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import ImportExportIcon from "@mui/icons-material/ImportExport";
 import { useState } from "react";
 
-import { PopoverSort, PopoverFilter } from "./PopoverFilterSort";
+import { PopoverFilter, PopoverSort } from "./PopoverFilterSort";
 
 /**
  * Responsible for filter button and the popover for the filter
@@ -32,11 +28,16 @@ export const FilterComponent = () => {
 
   const component = (
     <Tooltip title="Filter List">
-      <IconButton variant="contained" onClick={handleFilterPopover} color="white" sx ={{
-        "&:hover": {
-          transform: "scale(1.2)"
-        }
-      }}>
+      <IconButton
+        variant="contained"
+        onClick={handleFilterPopover}
+        color="white"
+        sx={{
+          "&:hover": {
+            transform: "scale(1.2)",
+          },
+        }}
+      >
         <FilterAltIcon />
       </IconButton>
     </Tooltip>
@@ -92,10 +93,16 @@ export const SortComponent = () => {
 
   const component = (
     <Tooltip title="Sort List">
-      <IconButton variant="contained" onClick={handleSortPopover} color="white" sx ={{
-        "&:hover": {
-          transform: "scale(1.2)"
-        }}}>
+      <IconButton
+        variant="contained"
+        onClick={handleSortPopover}
+        color="white"
+        sx={{
+          "&:hover": {
+            transform: "scale(1.2)",
+          },
+        }}
+      >
         <ImportExportIcon />
       </IconButton>
     </Tooltip>
@@ -127,4 +134,3 @@ export const SortComponent = () => {
     </>
   );
 };
-

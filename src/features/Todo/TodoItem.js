@@ -67,7 +67,13 @@ const PopoverForm = ({ id, title, description, priority, close }) => {
       description: descriptionUse,
       priority: priorityUse,
     };
-    dispatch(updateTodoThunk({ id, data, token }));
+    const previousData = {
+      title: title,
+      description: description,
+      priority: priority,
+    };
+    if (!Object.keys(data).every((key) => data[key] === previousData[key]))
+      dispatch(updateTodoThunk({ id, data, token }));
     close();
   };
 
@@ -164,7 +170,7 @@ const TodoItem = ({ id }) => {
     state.login.user.todos.find((t) => t.id === id)
   );
 
-  const [isHovered,setIsHovered] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const [showDescription, setShowDescription] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -200,10 +206,10 @@ const TodoItem = ({ id }) => {
 
   const handleMouseEnter = () => {
     setIsHovered(true);
-  }
+  };
   const handleMouseLeave = () => {
     setIsHovered(false);
-  }
+  };
 
   const openPopOver = (e) => {
     setAnchorEl(e.currentTarget);
@@ -217,7 +223,12 @@ const TodoItem = ({ id }) => {
   const popOverId = isPopOverOpen ? "pop" + id : undefined;
 
   return (
-    <Paper elevation={1} sx={{ width: "100%" }} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <Paper
+      elevation={1}
+      sx={{ width: "100%" }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <Grid container sx={{ p: 1 }}>
         <Grid
           item
@@ -251,26 +262,25 @@ const TodoItem = ({ id }) => {
             </Box>
           </Box>
           <Box>
-           {
-            isHovered && <Tooltip title="Delete To-do">
-            <IconButton onClick={handleDeleteButton}>
-              <DeleteIcon fontSize="small" color="error" />
-            </IconButton>
-          </Tooltip>
-           }
+            {isHovered && (
+              <Tooltip title="Delete To-do">
+                <IconButton onClick={handleDeleteButton}>
+                  <DeleteIcon fontSize="small" color="error" />
+                </IconButton>
+              </Tooltip>
+            )}
             <PriorityButton id={id} />
-            
           </Box>
         </Grid>
         <Grid item>
-          <Collapse in={showDescription} sx = {{px:1}}>
+          <Collapse in={showDescription} sx={{ px: 1 }}>
             {todo?.description !== "" && (
-              <Typography sx={{  fontSize: "85%" }}>
+              <Typography sx={{ fontSize: "85%" }}>
                 {todo?.description}
               </Typography>
             )}
             {todo?.status !== "COMPLETED" && (
-              <Button onClick={openPopOver} variant="contained" >
+              <Button onClick={openPopOver} variant="contained">
                 Edit
               </Button>
             )}

@@ -1,8 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import createTodoApi from "../../api/createTodoApi";
-import { updateTodoApi } from "../../api/updateTodoApi";
+import {
+  updateTodoApi,
+  updateTodoStatusBulkApi,
+} from "../../api/updateTodoApi";
 
 import { enqueue } from "./snackbarSlice";
+import { deleteTodoBulkApi } from "../../api/deleteTodoApi";
 /**
  *
  * @param {state of the slice} state
@@ -62,6 +66,28 @@ export const updateTodoThunk = createAsyncThunk(
   }
 );
 
+export const updateTodoStatusBulkThunk = createAsyncThunk(
+  "login/updateTodoStatusBulkThunk",
+  async ({ data, token }, { rejectWithValue, dispatch }) => {
+    const response = await updateTodoStatusBulkApi(data, token);
+    console.log(response);
+    if (response.length !== 0) {
+      dispatch(enqueue({ message: "Todos updated", variant: "success" }));
+      return response;
+    }
+    dispatch(enqueue({ message: "Todos cannot be updated", variant: "error" }));
+    return rejectWithValue("error Updating Todos statuses");
+  }
+);
+
+export const deleteTodoBulkThunk = createAsyncThunk(
+  "login/deleteTodoBulkThunk",
+  async ({ data, token }) => {
+    await deleteTodoBulkApi(data, token);
+    return data;
+  }
+);
+
 const loginSlice = createSlice({
   name: "login",
   initialState: {
@@ -86,7 +112,9 @@ const loginSlice = createSlice({
         action.payload.status;
     },
     deleteTodo: (state, action) => {
-      state.user.todos.find((t) => t.id === action.payload).status = "DELETED";
+      state.user.todos = state.user.todos.filter(
+        (t) => t.id !== action.payload
+      );
     },
   },
   extraReducers: (builder) => {
@@ -99,7 +127,25 @@ const loginSlice = createSlice({
           todo.description = action.payload.description;
           todo.priority = action.payload.priority;
         }
-      });
+      })
+      .addCase(updateTodoStatusBulkThunk.fulfilled, (state, action) => {
+        const updatedItems = action.payload;
+
+        state.user.todos = state.user.todos
+          .map((todo) => {
+            const updatedItem = updatedItems.find(
+              (item) => item.id === todo.id
+            );
+
+            if (updatedItem) return updatedItem;
+            return todo;
+          })
+
+      }).addCase(deleteTodoBulkThunk.fulfilled, (state, action) => {
+        state.user.todos = state.user.todos.filter(
+          (todo) => !action.payload.includes(todo.id)
+        );
+      })
   },
 });
 
