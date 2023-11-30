@@ -7,8 +7,9 @@ import DoubleUpArrowIcon from "../../components/icons/DoubleUpArrowIcon";
 import TripleUpArrowIcon from "../../components/icons/TripleUpArrowIcon";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { selectTodoById, updateTodoThunk } from "../../redux/slices/loginSlice";
+import { enqueue } from "../../redux/slices/snackbarSlice";
 
-const PriorityIcon = ({ priority,color}) => {
+const PriorityIcon = ({ priority, color }) => {
   if (priority === "HIGH")
     return <TripleUpArrowIcon fontSize="small" color={color || "error"} />;
   if (priority === "MEDIUM")
@@ -19,7 +20,7 @@ const PriorityIcon = ({ priority,color}) => {
 
 PriorityIcon.propTypes = {
   priority: propTypes.string.isRequired,
-  color: propTypes.string
+  color: propTypes.string,
 };
 
 const PriorityButton = ({ id }) => {
@@ -39,6 +40,13 @@ const PriorityButton = ({ id }) => {
 
   const handlePriorityChange = async (priority) => {
     if (todo?.priority === priority) return;
+    /**
+     * Check whether the entered priority is valid or not
+     */
+    if (priority !== "LOW" && priority !== "MEDIUM" && priority !== "HIGH") {
+      dispatch(enqueue({ message: "Invalid priority", variant: "error" }));
+      return;
+    }
     const data = {
       title: todo.title,
       description: todo.description,
@@ -48,14 +56,16 @@ const PriorityButton = ({ id }) => {
   };
 
   const open = Boolean(anchorEl);
-  if(todo?.status === "COMPLETED") {
-    return <Tooltip title={todo?.priority.toLowerCase()} >
-       <span>
-       <IconButton disabled >
-          <PriorityIcon priority={todo?.priority} color="gray" />
-        </IconButton>
-       </span>
+  if (todo?.status === "COMPLETED") {
+    return (
+      <Tooltip title={todo?.priority.toLowerCase()}>
+        <span>
+          <IconButton disabled>
+            <PriorityIcon priority={todo?.priority} color="gray" />
+          </IconButton>
+        </span>
       </Tooltip>
+    );
   }
 
   return (

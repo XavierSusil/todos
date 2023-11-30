@@ -200,8 +200,10 @@ const TodoItem = ({ id }) => {
     dispatch(enqueue({ message: "Todo deleted", variant: "success" }));
   };
 
-  const handleShowDescription = () => {
-    setShowDescription((prev) => !prev);
+  const handleShowDescription = (event) => {
+    console.log(event.target, event.currentTarget);
+    if (event.target === event.currentTarget)
+      setShowDescription((prev) => !prev);
   };
 
   const handleMouseEnter = () => {
@@ -229,7 +231,7 @@ const TodoItem = ({ id }) => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <Grid container sx={{ p: 1 }}>
+      <Grid container sx={{ p: 1 }} onClick={handleShowDescription}>
         <Grid
           item
           xs={12}
@@ -238,6 +240,7 @@ const TodoItem = ({ id }) => {
             justifyContent: "space-between",
             alignItems: "center",
           }}
+          onClick={handleShowDescription}
         >
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Checkbox
@@ -245,11 +248,12 @@ const TodoItem = ({ id }) => {
               size="small"
               color="secondary"
               onChange={handleCheckBoxChange}
+              onClick={(event) => event.stopPropagation()}
             />
-            <Box sx={{ fontWeight: showDescription ? "500" : "regular" }}>
+            <Box>
               <Typography
                 style={{
-                  fontWeight: "inherit",
+                  fontWeight: showDescription ? "bold" : "normal",
                   cursor: "pointer",
                   textDecoration:
                     todo?.status === "COMPLETED" ? "line-through" : "",
@@ -272,7 +276,7 @@ const TodoItem = ({ id }) => {
             <PriorityButton id={id} />
           </Box>
         </Grid>
-        <Grid item>
+        <Grid item onClick={handleShowDescription}>
           <Collapse in={showDescription} sx={{ px: 1 }}>
             {todo?.description !== "" && (
               <Typography sx={{ fontSize: "85%" }}>
