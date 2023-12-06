@@ -1,20 +1,11 @@
-import { Box } from "@mui/material";
+import PriorityButton from "../../features/Todo/PriorityButton";
+import "./experiment.css";
 
 const Experiment = () => {
-  const handleParentClick = (event) => {
-    console.log(event.target, event.currentTarget);
-  };
-
-  const handleChildBoxClick = (event) => {
-    console.log(event.target, event.currentTarget);
-    event.stopPropagation();
-  };
   return (
-    <Box onClick={handleParentClick}>
-      <Box>
-        <Box onClick={handleChildBoxClick}>inside all the boxes</Box>
-      </Box>
-    </Box>
+    <div className="experiment">
+      <PriorityButton id={258} />
+    </div>
   );
 };
 

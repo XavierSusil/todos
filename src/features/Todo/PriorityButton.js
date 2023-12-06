@@ -23,7 +23,11 @@ PriorityIcon.propTypes = {
   color: propTypes.string,
 };
 
-const PriorityButton = ({ id }) => {
+export const PriorityButton = ({
+  id,
+  popoverOpenCallback = () => {},
+  popoverCloseCallback = () => {},
+}) => {
   const todo = useSelector((state) => selectTodoById(state, id));
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -32,10 +36,12 @@ const PriorityButton = ({ id }) => {
 
   const handlePopoverClick = (event) => {
     setAnchorEl(event.currentTarget);
+    popoverOpenCallback();
   };
 
-  const handlePopoverClose = () => {
+  const handlePopoverClose = (event) => {
     setAnchorEl(null);
+    popoverCloseCallback(event);
   };
 
   const handlePriorityChange = async (priority) => {
@@ -118,6 +124,8 @@ const PriorityButton = ({ id }) => {
 
 PriorityButton.propTypes = {
   id: propTypes.number.isRequired,
+  popoverOpenCallback: propTypes.func,
+  popoverCloseCallback: propTypes.func,
 };
 
 export default PriorityButton;

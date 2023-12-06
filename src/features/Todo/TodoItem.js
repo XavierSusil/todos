@@ -26,7 +26,7 @@ import AngleUpArrowIcon from "../../components/icons/AngleUpArrowIcon";
 import DoubleUpArrowIcon from "../../components/icons/DoubleUpArrowIcon";
 import TripleUpArrowIcon from "../../components/icons/TripleUpArrowIcon";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useLocalStorage from "../../hooks/useLocalStorage";
 
@@ -169,6 +169,7 @@ const TodoItem = ({ id }) => {
   const todo = useSelector((state) =>
     state.login.user.todos.find((t) => t.id === id)
   );
+  const todoItemRef = useRef();
 
   const [isHovered, setIsHovered] = useState(false);
   const [showDescription, setShowDescription] = useState(false);
@@ -176,12 +177,15 @@ const TodoItem = ({ id }) => {
 
   const dispatch = useDispatch();
 
+  const isPopOverOpen = Boolean(anchorEl);
+  const popOverId = isPopOverOpen ? "pop" + id : undefined;
+
+  const checked = todo?.status === "COMPLETED";
+
   const updateStatusHelper = async (state) => {
     await updateTodoStatusApi(id, state, token);
     dispatch(updateTodoStatus({ id, status: state }));
   };
-
-  const checked = todo?.status === "COMPLETED";
 
   const handleCheckBoxChange = async () => {
     if (todo?.status === "IN_PROGRESS") {
@@ -201,7 +205,6 @@ const TodoItem = ({ id }) => {
   };
 
   const handleShowDescription = (event) => {
-    console.log(event.target, event.currentTarget);
     if (event.target === event.currentTarget)
       setShowDescription((prev) => !prev);
   };
@@ -221,8 +224,15 @@ const TodoItem = ({ id }) => {
     setAnchorEl(null);
   };
 
-  const isPopOverOpen = Boolean(anchorEl);
-  const popOverId = isPopOverOpen ? "pop" + id : undefined;
+  const handleClosePriorityPopOver = (event) => {
+    const parentRect = todoItemRef.current.getBoundingClientRect();
+    const isInsideParent =
+      event.clientX >= parentRect.left &&
+      event.clientX <= parentRect.right &&
+      event.clientY >= parentRect.top &&
+      event.clientY <= parentRect.bottom;
+    isInsideParent ? setIsHovered(true) : setIsHovered(false);
+  };
 
   return (
     <Paper
@@ -230,6 +240,7 @@ const TodoItem = ({ id }) => {
       sx={{ width: "100%" }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      ref={todoItemRef}
     >
       <Grid container sx={{ p: 1 }} onClick={handleShowDescription}>
         <Grid
@@ -273,7 +284,10 @@ const TodoItem = ({ id }) => {
                 </IconButton>
               </Tooltip>
             )}
-            <PriorityButton id={id} />
+            <PriorityButton
+              id={id}
+              popoverCloseCallback={handleClosePriorityPopOver}
+            />
           </Box>
         </Grid>
         <Grid item onClick={handleShowDescription}>
