@@ -1,12 +1,7 @@
-import PriorityButton from "../../features/Todo/PriorityButton";
+import { FilterComponent } from "../../components/TodoFilters";
 import "./experiment.css";
-
 const Experiment = () => {
-  return (
-    <div className="experiment">
-      <PriorityButton id={258} />
-    </div>
-  );
+  return <FilterComponent componentColor="primary" />;
 };
 
 export default Experiment;

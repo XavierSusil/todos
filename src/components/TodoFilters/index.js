@@ -2,8 +2,8 @@ import { IconButton, Popover, Tooltip } from "@mui/material";
 
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import ImportExportIcon from "@mui/icons-material/ImportExport";
+import propTypes from "prop-types";
 import { useState } from "react";
-
 import { PopoverFilter, PopoverSort } from "./PopoverFilterSort";
 
 /**
@@ -13,7 +13,7 @@ import { PopoverFilter, PopoverSort } from "./PopoverFilterSort";
  * @returns {JSX.Element}
  */
 
-export const FilterComponent = () => {
+export const FilterComponent = ({ componentColor }) => {
   const [filterEl, setFilterEl] = useState(null);
   const open = Boolean(filterEl);
   const id = open ? "popoverInSearchBar" : undefined;
@@ -31,7 +31,7 @@ export const FilterComponent = () => {
       <IconButton
         variant="contained"
         onClick={handleFilterPopover}
-        color="white"
+        color={componentColor}
         sx={{
           "&:hover": {
             transform: "scale(1.2)",
@@ -59,7 +59,7 @@ export const FilterComponent = () => {
       }}
       sx={{ p: 1 }}
     >
-      <PopoverFilter />
+      <PopoverFilter onClose={closeFilterPopover} />
     </Popover>
   );
 
@@ -69,6 +69,14 @@ export const FilterComponent = () => {
       {filterPopover}
     </>
   );
+};
+
+FilterComponent.propTypes = {
+  componentColor: propTypes.string,
+};
+
+FilterComponent.defaultProps = {
+  componentColor: "white",
 };
 
 /**
@@ -123,7 +131,7 @@ export const SortComponent = () => {
         horizontal: "center",
       }}
     >
-      <PopoverSort />
+      <PopoverSort onClose={closeSortPopover} />
     </Popover>
   );
 

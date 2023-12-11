@@ -14,8 +14,9 @@ import {
 
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import CloseIcon from "@mui/icons-material/Close";
 
-import PropTypes from "prop-types";
+import propTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateStatus } from "../../redux/slices/filterSortSlice";
@@ -30,12 +31,12 @@ const CheckBoxGenerator = ({ name, state, handle }) => {
 };
 
 CheckBoxGenerator.propTypes = {
-  name: PropTypes.string,
-  state: PropTypes.object,
-  handle: PropTypes.func,
+  name: propTypes.string,
+  state: propTypes.object,
+  handle: propTypes.func,
 };
 
-export const PopoverSort = () => {
+export const PopoverSort = ({ onClose }) => {
   const [checkBoxes, setCheckBoxes] = useState(
     useSelector((state) => state.filterSort.status)
   );
@@ -65,6 +66,16 @@ export const PopoverSort = () => {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1, p: 1 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Typography color="primary" fontWeight="bold">
+          Sort Todos{" "}
+        </Typography>
+        <CloseIcon
+          style={{ opacity: 0.5, cursor: "pointer" }}
+          fontSize="small"
+          onClick={onClose}
+        />
+      </Box>
       <Paper
         sx={{
           px: 1,
@@ -158,7 +169,10 @@ export const PopoverSort = () => {
   );
 };
 
-export const PopoverFilter = () => {
+PopoverSort.propTypes = {
+  onClose: propTypes.func,
+};
+export const PopoverFilter = ({ onClose }) => {
   const [checkBoxes, setCheckBoxes] = useState(
     useSelector((state) => state.filterSort.status)
   );
@@ -185,8 +199,22 @@ export const PopoverFilter = () => {
 
   return (
     <Grid container spacing={1} style={{ padding: "1rem" }}>
+      <Grid
+        item
+        xs={12}
+        sx={{ display: "flex", justifyContent: "space-between" }}
+      >
+        <Typography color="primary" fontWeight="bold">
+          Filter Todos
+        </Typography>
+        <CloseIcon
+          style={{ opacity: 0.5, cursor: "pointer" }}
+          fontSize="small"
+          onClick={onClose}
+        />
+      </Grid>
       <Grid item xs={6}>
-        <Typography sx={{ textAlign: "center" }}>Priority</Typography>
+        <Typography fontWeight="bold">Priority</Typography>
         <FormGroup>
           {["low", "medium", "high"].map((priority) => (
             <CheckBoxGenerator
@@ -199,7 +227,7 @@ export const PopoverFilter = () => {
         </FormGroup>
       </Grid>
       <Grid item xs={6}>
-        <Typography sx={{ textAlign: "center" }}>Status</Typography>
+        <Typography fontWeight="bold">Status</Typography>
         <FormControlLabel
           control={
             <Checkbox
@@ -224,4 +252,8 @@ export const PopoverFilter = () => {
       </Grid>
     </Grid>
   );
+};
+
+PopoverFilter.propTypes = {
+  onClose: propTypes.func,
 };
