@@ -1,30 +1,29 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 /**
- * 
- * @param {*} query 
- * 
+ *
+ * @param {*} query
+ *
  * this will  accept any valid   media query statement and return their current state
- * 
+ *
  */
 
 const useCustomMediaQuery = (query) => {
-   
-    const [matches, setMatches] = useState(false);
+  const [matches, setMatches] = useState(false);
 
-    useEffect(() => {
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(query);
 
-        const mediaQuery = window.matchMedia(query);
+    const handleMediaMatchesChange = (event) => {
+      setMatches(event.matches);
+    };
 
-        const handleMediaMatchesChange = (event) => {
-            setMatches(event.matches);
-        } 
+    mediaQuery.addEventListener("change", handleMediaMatchesChange);
 
-        mediaQuery.addEventListener('change', handleMediaMatchesChange);
+    return () =>
+      mediaQuery.removeEventListener("change", handleMediaMatchesChange);
+  }, [query]);
 
-        return () => mediaQuery.removeEventListener('change', handleMediaMatchesChange);
-    },[query])
-
-    return matches;
-}
+  return matches;
+};
 
 export default useCustomMediaQuery;
