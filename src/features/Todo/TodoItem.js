@@ -189,10 +189,10 @@ const TodoItem = ({ id }) => {
 
   const handleCheckBoxChange = async () => {
     if (todo?.status === "IN_PROGRESS") {
-      updateStatusHelper("COMPLETED");
+      await updateStatusHelper("COMPLETED");
       dispatch(enqueue({ message: "Todo Marked as done", variant: "success" }));
     } else {
-      updateStatusHelper("IN_PROGRESS");
+      await updateStatusHelper("IN_PROGRESS");
       dispatch(
         enqueue({ message: "Todo Marked as not done", variant: "success" })
       );
@@ -200,7 +200,7 @@ const TodoItem = ({ id }) => {
   };
 
   const handleDeleteButton = async () => {
-    updateStatusHelper(`DELETED_${todo?.status}`);
+    await updateStatusHelper(`DELETED_${todo?.status}`);
     dispatch(enqueue({ message: "Todo deleted", variant: "success" }));
   };
 

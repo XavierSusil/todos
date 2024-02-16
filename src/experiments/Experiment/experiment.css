@@ -1,4 +1,25 @@
-.experiment {
-    background-color: aqua;
-    height: 50vh;
+.aspect-ratio-box {
+    height: 0;
+    padding-top: 56.25%;
+    position: relative;
+    background: linear-gradient(to right , red,blue);
+    overflow: hidden;
 }
+
+.aspect-ratio-box-inside {
+  position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height:100%;
+}
+
+.flexbox-centering {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .viewport-sizing {
+    font-size: 5vw;
+  }

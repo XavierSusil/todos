@@ -1,9 +1,13 @@
-import { FilterComponent } from "../../components/TodoFilters";
 import "./experiment.css";
-import AuthProvider from "../ContextTest/AuthProvider"
-import Login from "../ContextTest/Login";
 const Experiment = () => {
-  return <AuthProvider><Login/></AuthProvider>
+  return <div className="aspect-ratio-box">
+    <div className="aspect-ratio-box-inside ">
+      <div className="flexbox-centering viewport-sizing">
+        Hello World
+      </div>
+    </div>
+  </div>
+
 };
 
 export default Experiment;
