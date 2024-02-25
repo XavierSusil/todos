@@ -1,4 +1,4 @@
 
-const endPointUrl = 'http://localhost:8080/api/v1';
+const endPointUrl =  process.env.REACT_APP_BACKEND_ENDPOINT;
 
 export default endPointUrl;
