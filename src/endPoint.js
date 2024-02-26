@@ -1,4 +1,2 @@
 
-const endPointUrl =  process.env.REACT_APP_BACKEND_ENDPOINT;
-
-export default endPointUrl;
+export const endPointUrl =  process.env.REACT_APP_BACKEND_ENDPOINT;

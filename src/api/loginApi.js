@@ -1,4 +1,4 @@
-import endPointUrl from "../endPoint";
+import {endPointUrl} from "../endPoint";
 
 /**
  *
@@ -11,7 +11,7 @@ import endPointUrl from "../endPoint";
  */
 const loginApi = async (username, password) => {
   const url = endPointUrl + "/auth/authenticate";
-
+  console.log("endPointUrl:", endPointUrl);
   try {
     const respsonse = await fetch(url, {
       method: "POST",

@@ -1,4 +1,4 @@
-import endPointUrl from "../endPoint";
+import {endPointUrl} from "../endPoint";
 
 const updateStatusHelper = async  (url,sts,token) => {
   try {

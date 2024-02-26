@@ -1,4 +1,4 @@
-import endPointUrl from "../endPoint";
+import {endPointUrl} from "../endPoint";
 
 export const deleteTodoBulkApi = async (ids, token ) => {
 

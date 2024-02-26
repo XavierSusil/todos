@@ -31,7 +31,7 @@
  *   }
  */
 
-import endPointUrl from "../endPoint";
+import {endPointUrl} from "../endPoint";
 
 const registerApi = async (formData) => {
   const url = endPointUrl + "/auth/register";
