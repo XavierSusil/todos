@@ -19,8 +19,10 @@ import { login as loginAction } from "../../redux/slices/loginSlice";
 
 const Login = () => {
   
+  const login = React.useReducer((state => state.login?.isLoggedIn));
+
   const navigate = useNavigate();
-  const [, setToken] = useLocalStorage("token", "");
+  const [token, setToken,clearToken] = useLocalStorage("token", "");
   const dispatch = useDispatch();
 
   const handleSubmit = async (event) => {
@@ -38,6 +40,18 @@ const Login = () => {
       enqueueSnackbar("Login Failed", { variant: "error" });
     }
   };
+
+  // React.useEffect(() =>{
+  //   const func = () =>{
+  //     if(login){
+  //       navigate("/");
+  //     }
+  //     else if(token && token !== ""){
+  //       clearToken();        
+  //     }
+  //   }
+  //   func();
+  // })
 
   return (
     <Grid container>

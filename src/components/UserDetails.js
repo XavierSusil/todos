@@ -16,8 +16,8 @@ export const UserDetails = () => {
 
   const handleButtonClickLogin = () => {
     // logout button is currently in navbar so clear localstorage
-    clearToken();
     dispatch(clearLogin());
+    clearToken();
     enqueueSnackbar("logged out successfully", {
       variant: "success",
       autoHideDuration: 3000,
