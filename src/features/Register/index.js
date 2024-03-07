@@ -13,6 +13,7 @@ import * as React from "react";
 
 import { enqueueSnackbar } from "notistack";
 import RegisterImage from "../../assets/registerPageBack.jpg";
+import useLocalStorage from "../../hooks/useLocalStorage";
 
 import { useNavigate } from "react-router-dom";
 import registerApi from "../../api/registerApi";
@@ -64,6 +65,7 @@ const validate = (data) => {
 
 const Register = () => {
   const navigate = useNavigate();
+  const [token] = useLocalStorage("token", "");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -85,6 +87,15 @@ const Register = () => {
       }
     }
   };
+
+  React.useEffect(() => {
+    const func = () => {
+      if (token && token !== "") {
+        navigate("/");
+      }
+    };
+    func();
+  }, [navigate, token]);
 
   return (
     <Grid container>

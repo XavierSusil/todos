@@ -3,8 +3,6 @@ import {endPointUrl} from "../endPoint";
 export const deleteTodoBulkApi = async (ids, token ) => {
 
   const url = endPointUrl + "/todo/bulk";
-  console.log( url );
-
   await fetch(url, {
     method: 'DELETE',
     headers: {
