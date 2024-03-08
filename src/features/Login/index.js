@@ -18,15 +18,14 @@ import useLocalStorage from "../../hooks/useLocalStorage";
 import { login as loginAction } from "../../redux/slices/loginSlice";
 
 const Login = () => {
-
   const navigate = useNavigate();
-  const [token, setToken] = useLocalStorage("token", "");
+  const [, setToken] = useLocalStorage("token", "");
   const dispatch = useDispatch();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-   
+
     const fromApi = await loginApi(data.get("username"), data.get("password"));
 
     if (fromApi.hasOwnProperty("token")) {
@@ -38,16 +37,6 @@ const Login = () => {
       enqueueSnackbar("Login Failed", { variant: "error" });
     }
   };
-  
-
-  React.useEffect(() =>{
-    const func = () =>{
-      if(token && token !== ""){
-        navigate("/") 
-      }
-    }
-    func();
-  },[navigate,token])
 
   return (
     <Grid container>
