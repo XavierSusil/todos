@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Checkbox,
-  Collapse,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -172,7 +171,6 @@ const TodoItem = ({ id }) => {
   const todoItemRef = useRef();
 
   const [isHovered, setIsHovered] = useState(false);
-  const [showDescription, setShowDescription] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const dispatch = useDispatch();
@@ -202,11 +200,6 @@ const TodoItem = ({ id }) => {
   const handleDeleteButton = async () => {
     await updateStatusHelper(`DELETED_${todo?.status}`);
     dispatch(enqueue({ message: "Todo deleted", variant: "success" }));
-  };
-
-  const handleShowDescription = (event) => {
-    if (event.target === event.currentTarget)
-      setShowDescription((prev) => !prev);
   };
 
   const handleMouseEnter = () => {
@@ -242,7 +235,7 @@ const TodoItem = ({ id }) => {
       onMouseLeave={handleMouseLeave}
       ref={todoItemRef}
     >
-      <Grid container sx={{ p: 1 }} onClick={handleShowDescription}>
+      <Grid container sx={{ p: 1 }}>
         <Grid
           item
           xs={12}
@@ -251,7 +244,6 @@ const TodoItem = ({ id }) => {
             justifyContent: "space-between",
             alignItems: "center",
           }}
-          onClick={handleShowDescription}
         >
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Checkbox
@@ -264,13 +256,12 @@ const TodoItem = ({ id }) => {
             <Box>
               <Typography
                 style={{
-                  fontWeight: showDescription ? "bold" : "normal",
+                  fontWeight: "bold",
                   cursor: "pointer",
                   textDecoration:
                     todo?.status === "COMPLETED" ? "line-through" : "",
                   opacity: todo?.status === "COMPLETED" ? 0.5 : 1,
                 }}
-                onClick={handleShowDescription}
               >
                 {todo?.title}
               </Typography>
@@ -290,19 +281,17 @@ const TodoItem = ({ id }) => {
             />
           </Box>
         </Grid>
-        <Grid item onClick={handleShowDescription}>
-          <Collapse in={showDescription} sx={{ px: 1 }}>
-            {todo?.description !== "" && (
-              <Typography sx={{ fontSize: "85%" }}>
-                {todo?.description}
-              </Typography>
-            )}
-            {todo?.status !== "COMPLETED" && (
-              <Button onClick={openPopOver} variant="contained">
-                Edit
-              </Button>
-            )}
-          </Collapse>
+        <Grid item>
+          <Typography sx={{ fontSize: "85%" }}>
+            {todo?.description || "."}
+          </Typography>
+          <Button
+            onClick={openPopOver}
+            variant="outlined"
+            disabled={todo?.status === "COMPLETED"}
+          >
+            Edit
+          </Button>
         </Grid>
       </Grid>
       <Popover

@@ -81,7 +81,10 @@ const EmptyTodoList = ({ setCreateTodoDialog }) => {
         elevation={24}
       >
         <Typography variant="h5">Todo List is empty </Typography>
-        <Typography variant="subtitle2"> Click below to Add a new todo</Typography>
+        <Typography variant="subtitle2">
+          {" "}
+          Click below to Add a new todo
+        </Typography>
         <CreateTodoWindow
           setCreateTodoDialog={setCreateTodoDialog}
           justifyCenter
@@ -112,11 +115,21 @@ const Todo = () => {
         width: "98%",
       }}
     >
-      {!isSmallScreen && (
-        <CreateTodoWindow setCreateTodoDialog={setOpenCreateTodoDialog} />
-      )}
       <Grid container spacing={1}>
         <Grid item xs={8}>
+          <Grid container>
+            <Grid item xs={4}>
+              <Button
+                onClick={setOpenCreateTodoDialog}
+                variant="contained"
+                color="secondary"
+                fullWidth
+              >
+                New Todo
+              </Button>
+            </Grid>
+            <Grid item xs={8}></Grid>
+          </Grid>
           <Box
             sx={{
               maxWidth: isSmallScreen ? "90vw" : "55vw",
@@ -140,9 +153,13 @@ const Todo = () => {
               },
             }}
           >
-            {todos?.map((val) => (
-              <TodoItem key={val.id} id={val.id} />
-            ))}
+            <Grid container spacing={1}>
+              {todos?.map((val) => (
+                <Grid item xs={6}>
+                  <TodoItem key={val.id} id={val.id} />
+                </Grid>
+              ))}
+            </Grid>
             {todos?.length === 0 && (
               <EmptyTodoList setCreateTodoDialog={setOpenCreateTodoDialog} />
             )}

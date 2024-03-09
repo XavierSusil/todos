@@ -50,6 +50,7 @@ const validateForm = (data) => {
       enqueEmptyErrorMessage(entry);
       returnFlag = true;
     }
+    if (returnFlag) return;
     // converting the key format to match the key format of regexPatterns Object key
     let key =
       entry[0].toLowerCase() +
