@@ -16,60 +16,72 @@ import RegisterImage from "../../assets/registerPageBack.jpg";
 
 import { useNavigate } from "react-router-dom";
 import registerApi from "../../api/registerApi";
+import validate from "../../utils/validate/validate";
 
-const enqueErrorMessage = (message) => {
-  enqueueSnackbar(`Please enter ${message}`, {
+const enqueEmptyErrorMessage = (field) => {
+  enqueueSnackbar(`Please enter ${field}`, {
     variant: "warning",
     autoHideDuration: 3000,
   });
 };
 
-const validate = (data) => {
-  const firstName = data.get("firstName");
-  const lastName = data.get("lastName");
-  const email = data.get("email");
-  const password = data.get("password");
-  const confirmPassword = data.get("confirmPassword");
-  const username = data.get("username");
+const enqueInvalidErrorMessage = (field) => {
+  enqueueSnackbar(`Invalid ${field} is entered`, {
+    variant: "warning",
+    autoHideDuration: 2000,
+  });
+};
 
-  if (firstName === "") {
-    enqueErrorMessage("First Name");
-    return false;
-  }
-  if (lastName === "") {
-    enqueErrorMessage("Last Name");
-    return false;
-  }
-  if (username === "") {
-    enqueErrorMessage("Username");
-    return false;
-  }
-  if (email === "") {
-    enqueErrorMessage("Email");
-    return false;
-  }
-  if (password === "") {
-    enqueErrorMessage("Password");
-    return false;
-  }
-  if (password !== confirmPassword) {
+const validateForm = (data) => {
+  let returnFlag = false;
+
+  let formData = {
+    "First Name": data.get("firstName"),
+    "Last Name": data.get("lastName"),
+    Username: data.get("username"),
+    Email: data.get("email"),
+    Password: data.get("password"),
+    "Confirm Password": data.get("confirmPassword"),
+  };
+
+  Object.keys(formData).forEach((entry) => {
+    if (returnFlag) return;
+    if (formData[entry] === "") {
+      enqueEmptyErrorMessage(entry);
+      returnFlag = true;
+    }
+    // converting the key format to match the key format of regexPatterns Object key
+    let key =
+      entry[0].toLowerCase() +
+      entry
+        .replace(/\b\w/g, (c) => c.toUpperCase())
+        .replace(" ", "")
+        .slice(1);
+    if (!validate(key, formData[entry])) {
+      enqueInvalidErrorMessage(entry);
+      returnFlag = true;
+    }
+  });
+  if (returnFlag) return false;
+
+  if (formData["Password"] !== formData["Confirm Password"]) {
     enqueueSnackbar("Passwords do not match", {
       variant: "warning",
       autoHideDuration: 3000,
     });
     return false;
   }
+
   return true;
 };
 
 const Register = () => {
   const navigate = useNavigate();
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
-    if (validate(data)) {
+    if (validateForm(data)) {
       const dataFromApi = await registerApi(data);
       if (dataFromApi.hasOwnProperty("token")) {
         enqueueSnackbar("User Registered Successfully", {

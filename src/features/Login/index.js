@@ -18,7 +18,6 @@ import useLocalStorage from "../../hooks/useLocalStorage";
 import { login as loginAction } from "../../redux/slices/loginSlice";
 
 const Login = () => {
-  
   const navigate = useNavigate();
   const [, setToken] = useLocalStorage("token", "");
   const dispatch = useDispatch();
@@ -26,7 +25,7 @@ const Login = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-   
+
     const fromApi = await loginApi(data.get("username"), data.get("password"));
 
     if (fromApi.hasOwnProperty("token")) {
