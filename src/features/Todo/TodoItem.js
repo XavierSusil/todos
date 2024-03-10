@@ -3,11 +3,9 @@ import {
   Box,
   Button,
   Checkbox,
-  Collapse,
   FormControl,
   FormControlLabel,
   FormLabel,
-  Grid,
   IconButton,
   Paper,
   Popover,
@@ -164,7 +162,7 @@ PopoverForm.propTypes = {
   close: propTypes.func.isRequired,
 };
 
-const TodoItem = ({ id }) => {
+const TodoItem = ({ id, showDescription, height = 0 }) => {
   const [token] = useLocalStorage("token", "");
   const todo = useSelector((state) =>
     state.login.user.todos.find((t) => t.id === id)
@@ -172,7 +170,6 @@ const TodoItem = ({ id }) => {
   const todoItemRef = useRef();
 
   const [isHovered, setIsHovered] = useState(false);
-  const [showDescription, setShowDescription] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const dispatch = useDispatch();
@@ -204,11 +201,6 @@ const TodoItem = ({ id }) => {
     dispatch(enqueue({ message: "Todo deleted", variant: "success" }));
   };
 
-  const handleShowDescription = (event) => {
-    if (event.target === event.currentTarget)
-      setShowDescription((prev) => !prev);
-  };
-
   const handleMouseEnter = () => {
     setIsHovered(true);
   };
@@ -237,74 +229,76 @@ const TodoItem = ({ id }) => {
   return (
     <Paper
       elevation={1}
-      sx={{ width: "100%" }}
+      sx={{
+        width: "97%",
+        minHeight: height,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        p: 1,
+      }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       ref={todoItemRef}
     >
-      <Grid container sx={{ p: 1 }} onClick={handleShowDescription}>
-        <Grid
-          item
-          xs={12}
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-          onClick={handleShowDescription}
-        >
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Checkbox
-              checked={checked}
-              size="small"
-              color="secondary"
-              onChange={handleCheckBoxChange}
-              onClick={(event) => event.stopPropagation()}
-            />
-            <Box>
-              <Typography
-                style={{
-                  fontWeight: showDescription ? "bold" : "normal",
-                  cursor: "pointer",
-                  textDecoration:
-                    todo?.status === "COMPLETED" ? "line-through" : "",
-                  opacity: todo?.status === "COMPLETED" ? 0.5 : 1,
-                }}
-                onClick={handleShowDescription}
-              >
-                {todo?.title}
-              </Typography>
-            </Box>
-          </Box>
-          <Box>
-            {isHovered && (
-              <Tooltip title="Delete To-do">
-                <IconButton onClick={handleDeleteButton}>
-                  <DeleteIcon fontSize="small" color="error" />
-                </IconButton>
-              </Tooltip>
-            )}
-            <PriorityButton
-              id={id}
-              popoverCloseCallback={handleClosePriorityPopOver}
-            />
-          </Box>
-        </Grid>
-        <Grid item onClick={handleShowDescription}>
-          <Collapse in={showDescription} sx={{ px: 1 }}>
-            {todo?.description !== "" && (
-              <Typography sx={{ fontSize: "85%" }}>
-                {todo?.description}
-              </Typography>
-            )}
-            {todo?.status !== "COMPLETED" && (
-              <Button onClick={openPopOver} variant="contained">
-                Edit
-              </Button>
-            )}
-          </Collapse>
-        </Grid>
-      </Grid>
+      {/**
+       * This is todo item line 1
+       */}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Checkbox
+            checked={checked}
+            size="small"
+            color="secondary"
+            onChange={handleCheckBoxChange}
+            onClick={(event) => event.stopPropagation()}
+          />
+          <Typography
+            style={{
+              fontWeight: "bold",
+              cursor: "pointer",
+              textDecoration:
+                todo?.status === "COMPLETED" ? "line-through" : "",
+              opacity: todo?.status === "COMPLETED" ? 0.5 : 1,
+            }}
+          >
+            {todo?.title || "title"}
+          </Typography>
+        </Box>
+        <Box>
+          {isHovered && (
+            <Tooltip title="Delete To-do">
+              <IconButton onClick={handleDeleteButton}>
+                <DeleteIcon fontSize="small" color="error" />
+              </IconButton>
+            </Tooltip>
+          )}
+          <PriorityButton
+            id={id}
+            popoverCloseCallback={handleClosePriorityPopOver}
+          />
+        </Box>
+      </Box>
+      <Typography sx={{ fontSize: "85%" }}>
+        {todo?.description}
+        {/** This line there for initially calculating the height of the
+            todoItem by the parent */}
+        {todo?.description ? "" : showDescription ? "description" : ""}
+      </Typography>
+      <Button
+        onClick={openPopOver}
+        variant="outlined"
+        disabled={todo?.status === "COMPLETED"}
+        sx={{ width: "fit-content" }}
+      >
+        Edit
+      </Button>
       <Popover
         id={popOverId}
         open={isPopOverOpen}
