@@ -10,7 +10,7 @@ import {
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import propTypes from "prop-types";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import useSmallScreen from "../../hooks/useSmallScreen";
 import CreateTodo from "./CreateTodo";
 import DeletedTodos from "./DeletedTodos";
@@ -100,11 +100,28 @@ EmptyTodoList.propTypes = {
 
 const Todo = () => {
   const [openCreateTodoDialog, setOpenCreateTodoDialog] = useState(false);
+  const [todoItemHeight, setTodoItemHeight] = useState(0);
   const isSmallScreen = useSmallScreen();
-
+  const TodoItemRef = useRef();
   const handleCreateTodoDialogClose = () => {
     setOpenCreateTodoDialog(false);
   };
+
+  /**
+   *   /**
+   *   const WrapperRef = useRef();
+  const isSmallScreen = useSmallScreen();
+  useEffect(() => {
+    if (!searchBarWidth) {
+      setSearchBarWidth(WrapperRef?.current?.getBoundingClientRect().width);
+    }
+  }, [searchBarWidth]);
+   */
+  useEffect(() => {
+    if (!todoItemHeight) {
+      setTodoItemHeight(TodoItemRef?.current?.getBoundingClientRect().height);
+    }
+  }, [todoItemHeight]);
 
   const todos = useSearchedTodos();
   return (
@@ -153,12 +170,22 @@ const Todo = () => {
               },
             }}
           >
-            <Grid container spacing={1}>
-              {todos?.map((val) => (
+            <Grid container spacing={1} ref={TodoItemRef}>
+              {!todoItemHeight ? (
                 <Grid item xs={6}>
-                  <TodoItem key={val.id} id={val.id} />
+                  <TodoItem showDescription={true} />
                 </Grid>
-              ))}
+              ) : (
+                todos?.map((val) => (
+                  <Grid item xs={6}>
+                    <TodoItem
+                      key={val.id}
+                      id={val.id}
+                      height={todoItemHeight}
+                    />
+                  </Grid>
+                ))
+              )}
             </Grid>
             {todos?.length === 0 && (
               <EmptyTodoList setCreateTodoDialog={setOpenCreateTodoDialog} />

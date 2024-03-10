@@ -6,7 +6,6 @@ import {
   FormControl,
   FormControlLabel,
   FormLabel,
-  Grid,
   IconButton,
   Paper,
   Popover,
@@ -163,7 +162,7 @@ PopoverForm.propTypes = {
   close: propTypes.func.isRequired,
 };
 
-const TodoItem = ({ id }) => {
+const TodoItem = ({ id, showDescription, height = 0 }) => {
   const [token] = useLocalStorage("token", "");
   const todo = useSelector((state) =>
     state.login.user.todos.find((t) => t.id === id)
@@ -230,70 +229,76 @@ const TodoItem = ({ id }) => {
   return (
     <Paper
       elevation={1}
-      sx={{ width: "100%" }}
+      sx={{
+        width: "97%",
+        minHeight: height,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        p: 1,
+      }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       ref={todoItemRef}
     >
-      <Grid container sx={{ p: 1 }}>
-        <Grid
-          item
-          xs={12}
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Checkbox
-              checked={checked}
-              size="small"
-              color="secondary"
-              onChange={handleCheckBoxChange}
-              onClick={(event) => event.stopPropagation()}
-            />
-            <Box>
-              <Typography
-                style={{
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  textDecoration:
-                    todo?.status === "COMPLETED" ? "line-through" : "",
-                  opacity: todo?.status === "COMPLETED" ? 0.5 : 1,
-                }}
-              >
-                {todo?.title}
-              </Typography>
-            </Box>
-          </Box>
-          <Box>
-            {isHovered && (
-              <Tooltip title="Delete To-do">
-                <IconButton onClick={handleDeleteButton}>
-                  <DeleteIcon fontSize="small" color="error" />
-                </IconButton>
-              </Tooltip>
-            )}
-            <PriorityButton
-              id={id}
-              popoverCloseCallback={handleClosePriorityPopOver}
-            />
-          </Box>
-        </Grid>
-        <Grid item>
-          <Typography sx={{ fontSize: "85%" }}>
-            {todo?.description || "."}
-          </Typography>
-          <Button
-            onClick={openPopOver}
-            variant="outlined"
-            disabled={todo?.status === "COMPLETED"}
+      {/**
+       * This is todo item line 1
+       */}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Checkbox
+            checked={checked}
+            size="small"
+            color="secondary"
+            onChange={handleCheckBoxChange}
+            onClick={(event) => event.stopPropagation()}
+          />
+          <Typography
+            style={{
+              fontWeight: "bold",
+              cursor: "pointer",
+              textDecoration:
+                todo?.status === "COMPLETED" ? "line-through" : "",
+              opacity: todo?.status === "COMPLETED" ? 0.5 : 1,
+            }}
           >
-            Edit
-          </Button>
-        </Grid>
-      </Grid>
+            {todo?.title || "title"}
+          </Typography>
+        </Box>
+        <Box>
+          {isHovered && (
+            <Tooltip title="Delete To-do">
+              <IconButton onClick={handleDeleteButton}>
+                <DeleteIcon fontSize="small" color="error" />
+              </IconButton>
+            </Tooltip>
+          )}
+          <PriorityButton
+            id={id}
+            popoverCloseCallback={handleClosePriorityPopOver}
+          />
+        </Box>
+      </Box>
+      <Typography sx={{ fontSize: "85%" }}>
+        {todo?.description}
+        {/** This line there for initially calculating the height of the
+            todoItem by the parent */}
+        {todo?.description ? "" : showDescription ? "description" : ""}
+      </Typography>
+      <Button
+        onClick={openPopOver}
+        variant="outlined"
+        disabled={todo?.status === "COMPLETED"}
+        sx={{ width: "fit-content" }}
+      >
+        Edit
+      </Button>
       <Popover
         id={popOverId}
         open={isPopOverOpen}
