@@ -228,7 +228,7 @@ const TodoItem = ({ id, showDescription, height = 0 }) => {
 
   return (
     <Paper
-      elevation={1}
+      elevation={6}
       sx={{
         width: "97%",
         minHeight: height,
@@ -262,7 +262,6 @@ const TodoItem = ({ id, showDescription, height = 0 }) => {
           <Typography
             style={{
               fontWeight: "bold",
-              cursor: "pointer",
               textDecoration:
                 todo?.status === "COMPLETED" ? "line-through" : "",
               opacity: todo?.status === "COMPLETED" ? 0.5 : 1,
