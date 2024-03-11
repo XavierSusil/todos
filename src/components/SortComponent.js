@@ -1,40 +1,28 @@
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import ImportExportIcon from "@mui/icons-material/ImportExport";
 import {
-  Box,
   Checkbox,
-  FormControl,
   FormControlLabel,
-  FormGroup,
-  Grid,
   IconButton,
-  Paper,
+  Popover,
   Radio,
   RadioGroup,
-  Typography,
+  Tooltip,
 } from "@mui/material";
+import { useEffect, useState } from "react";
 
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import CloseIcon from "@mui/icons-material/Close";
-
-import propTypes from "prop-types";
-import { useEffect, useState } from "react";
+import { Box, FormControl, Paper, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { updateStatus } from "../../redux/slices/filterSortSlice";
-
-const CheckBoxGenerator = ({ name, state, handle }) => {
-  return (
-    <FormControlLabel
-      control={<Checkbox name={name} checked={state[name]} onChange={handle} />}
-      label={name[0].toUpperCase() + name.slice(1)}
-    />
-  );
-};
-
-CheckBoxGenerator.propTypes = {
-  name: propTypes.string,
-  state: propTypes.object,
-  handle: propTypes.func,
-};
+import { updateStatus } from "../redux/slices/filterSortSlice";
+import propTypes from "prop-types";
+/**
+ * It creates a new Sort button and manages the popover of it
+ * The popover is internally created by the PopoverSort component
+ *
+ * @returns {JSX.Element}
+ */
 
 export const PopoverSort = ({ onClose }) => {
   const [checkBoxes, setCheckBoxes] = useState(
@@ -172,88 +160,61 @@ export const PopoverSort = ({ onClose }) => {
 PopoverSort.propTypes = {
   onClose: propTypes.func,
 };
-export const PopoverFilter = ({ onClose }) => {
-  const [checkBoxes, setCheckBoxes] = useState(
-    useSelector((state) => state.filterSort.status)
+
+export const SortComponent = () => {
+  const [sortEl, setSortEl] = useState(null);
+
+  const handleSortPopover = (e) => {
+    setSortEl(e.currentTarget);
+  };
+
+  const closeSortPopover = () => {
+    setSortEl(null);
+  };
+
+  const openSort = Boolean(sortEl);
+  const sortId = openSort ? "popoverSortId" : undefined;
+
+  const component = (
+    <Tooltip title="Sort List">
+      <IconButton
+        variant="contained"
+        onClick={handleSortPopover}
+        color="primary"
+        sx={{
+          "&:hover": {
+            transform: "scale(1.2)",
+          },
+        }}
+      >
+        <ImportExportIcon />
+      </IconButton>
+    </Tooltip>
   );
 
-  const dispatch = useDispatch();
-
-  const handleCheckBoxChange = (e) => {
-    const { name, checked } = e.target;
-    setCheckBoxes((prev) => ({ ...prev, [name]: checked }));
-  };
-
-  const handleAllChange = () => {
-    setCheckBoxes((prev) => ({
-      ...prev,
-      progress: !prev.all,
-      completed: !prev.all,
-      all: !prev.all,
-    }));
-  };
-
-  useEffect(() => {
-    dispatch(updateStatus(checkBoxes));
-  }, [checkBoxes, dispatch]);
+  const sortPopover = (
+    <Popover
+      id={sortId}
+      open={openSort}
+      anchorEl={sortEl}
+      onClose={closeSortPopover}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "center",
+      }}
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "center",
+      }}
+    >
+      <PopoverSort onClose={closeSortPopover} />
+    </Popover>
+  );
 
   return (
-    <Grid container spacing={1} style={{ padding: "1rem" }}>
-      <Grid
-        item
-        xs={12}
-        sx={{ display: "flex", justifyContent: "space-between" }}
-      >
-        <Typography color="primary" fontWeight="bold">
-          Filter Todos
-        </Typography>
-        <CloseIcon
-          style={{ opacity: 0.5, cursor: "pointer" }}
-          fontSize="small"
-          onClick={onClose}
-        />
-      </Grid>
-      <Grid item xs={6}>
-        <Typography fontWeight="bold">Priority</Typography>
-        <FormGroup>
-          {["low", "medium", "high"].map((priority) => (
-            <CheckBoxGenerator
-              key={priority}
-              name={priority}
-              state={checkBoxes}
-              handle={handleCheckBoxChange}
-            />
-          ))}
-        </FormGroup>
-      </Grid>
-      <Grid item xs={6}>
-        <Typography fontWeight="bold">Status</Typography>
-        <FormControlLabel
-          control={
-            <Checkbox
-              name="all"
-              checked={checkBoxes.progress && checkBoxes.completed}
-              indeterminate={checkBoxes.progress !== checkBoxes.completed}
-              onChange={handleAllChange}
-            />
-          }
-          label="All"
-        />
-        <FormGroup>
-          {["progress", "completed"].map((status) => (
-            <CheckBoxGenerator
-              key={status}
-              name={status}
-              state={checkBoxes}
-              handle={handleCheckBoxChange}
-            />
-          ))}
-        </FormGroup>
-      </Grid>
-    </Grid>
+    <>
+      {component}
+      {sortPopover}
+    </>
   );
-};
-
-PopoverFilter.propTypes = {
-  onClose: propTypes.func,
 };

@@ -16,6 +16,8 @@ import CreateTodo from "./CreateTodo";
 import DeletedTodos from "./DeletedTodos";
 import TodoItem from "./TodoItem";
 import useSearchedTodos from "./useSearchedTodos";
+import { SortComponent } from "../../components/SortComponent";
+import { FilterComponent } from "../../components/FilterComponent";
 
 const CreateTodoWindow = ({
   setCreateTodoDialog,
@@ -145,7 +147,10 @@ const Todo = () => {
                 New Todo
               </Button>
             </Grid>
-            <Grid item xs={8}></Grid>
+            <Grid item xs={8}>
+              <SortComponent />
+              <FilterComponent />
+            </Grid>
           </Grid>
           <Box
             sx={{

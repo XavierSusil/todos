@@ -5,7 +5,6 @@ import propTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
 import useSmallScreen from "../hooks/useSmallScreen";
 import SearchBar2, { SearchBar } from "./SearchBar2";
-import { FilterComponent, SortComponent } from "./TodoFilters";
 import { UserDetails } from "./UserDetails";
 
 const NavbarOuterUI = ({ children }) => {
@@ -60,8 +59,6 @@ const Navbar = () => {
             <SearchBar2 width={searchBarWidth} />
           )}
         </Box>
-        <SortComponent />
-        <FilterComponent />
         <UserDetails />
       </Box>
     </NavbarOuterUI>
