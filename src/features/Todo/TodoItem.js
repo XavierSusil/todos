@@ -228,7 +228,7 @@ const TodoItem = ({ id, showDescription, height = 0 }) => {
 
   return (
     <Paper
-      elevation={6}
+      elevation={4}
       sx={{
         width: "97%",
         minHeight: height,
