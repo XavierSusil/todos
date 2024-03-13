@@ -136,7 +136,7 @@ const Todo = () => {
         >
           <Box
             sx={{
-              maxWidth: isSmallScreen ? "90vw" : "55vw",
+              width: isSmallScreen ?"90vw":"55vw",
               display: "flex",
               alignItems: "center",
               flexDirection: "column",
@@ -172,11 +172,8 @@ const Todo = () => {
             </Grid>
             <Box
               sx={{
-                alignItems: "center",
                 overflowY: "auto",
                 overflowX: "hidden",
-                display: "flex",
-                flexDirection: "column",
                 gap: 1,
                 p: 1,
                 width: "95%",
@@ -200,9 +197,8 @@ const Todo = () => {
                   </Grid>
                 ) : (
                   todos?.map((val) => (
-                    <Grid item xs={4}>
+                    <Grid item key={val.id} xs={4}>
                       <TodoItem
-                        key={val.id}
                         id={val.id}
                         height={todoItemHeight}
                       />

@@ -6,17 +6,14 @@ import {
   FormControl,
   FormControlLabel,
   FormLabel,
-  IconButton,
   Paper,
   Popover,
   Radio,
   RadioGroup,
   TextField,
-  Tooltip,
   Typography,
 } from "@mui/material";
 
-import DeleteIcon from "@mui/icons-material/Delete";
 import DoneIcon from "@mui/icons-material/Done";
 import EditIcon from "@mui/icons-material/Edit";
 import propTypes from "prop-types";
@@ -168,8 +165,6 @@ const TodoItem = ({ id, showDescription, height = 0 }) => {
     state.login.user.todos.find((t) => t.id === id)
   );
   const todoItemRef = useRef();
-
-  const [isHovered, setIsHovered] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const dispatch = useDispatch();
@@ -201,13 +196,6 @@ const TodoItem = ({ id, showDescription, height = 0 }) => {
     dispatch(enqueue({ message: "Todo deleted", variant: "success" }));
   };
 
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-  };
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-  };
-
   const openPopOver = (e) => {
     setAnchorEl(e.currentTarget);
   };
@@ -216,16 +204,9 @@ const TodoItem = ({ id, showDescription, height = 0 }) => {
     setAnchorEl(null);
   };
 
-  const handleClosePriorityPopOver = (event) => {
-    const parentRect = todoItemRef.current.getBoundingClientRect();
-    const isInsideParent =
-      event.clientX >= parentRect.left &&
-      event.clientX <= parentRect.right &&
-      event.clientY >= parentRect.top &&
-      event.clientY <= parentRect.bottom;
-    isInsideParent ? setIsHovered(true) : setIsHovered(false);
-  };
-
+  let showDescriptionString = "";
+  if (todo?.description && showDescription)
+    showDescriptionString = "description";
   return (
     <Paper
       elevation={4}
@@ -237,12 +218,10 @@ const TodoItem = ({ id, showDescription, height = 0 }) => {
         justifyContent: "space-between",
         p: 1,
       }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
       ref={todoItemRef}
     >
       {/**
-       * This is todo item line 1
+       * This is item's  first line
        */}
       <Box
         sx={{
@@ -270,34 +249,23 @@ const TodoItem = ({ id, showDescription, height = 0 }) => {
             {todo?.title || "title"}
           </Typography>
         </Box>
-        <Box>
-          {isHovered && (
-            <Tooltip title="Delete To-do">
-              <IconButton onClick={handleDeleteButton}>
-                <DeleteIcon fontSize="small" color="error" />
-              </IconButton>
-            </Tooltip>
-          )}
-          <PriorityButton
-            id={id}
-            popoverCloseCallback={handleClosePriorityPopOver}
-          />
-        </Box>
+
+        <PriorityButton id={id} />
       </Box>
       <Typography sx={{ fontSize: "85%" }}>
         {todo?.description}
         {/** This line there for initially calculating the height of the
             todoItem by the parent */}
-        {todo?.description ? "" : showDescription ? "description" : ""}
+        {showDescriptionString}
       </Typography>
-      <Button
-        onClick={openPopOver}
-        variant="outlined"
-        disabled={todo?.status === "COMPLETED"}
-        sx={{ width: "fit-content" }}
-      >
-        Edit
-      </Button>
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Button onClick={openPopOver} disabled={todo?.status === "COMPLETED"}>
+          Edit
+        </Button>
+        <Button color="secondary" onClick={handleDeleteButton}>
+          delete
+        </Button>
+      </Box>
       <Popover
         id={popOverId}
         open={isPopOverOpen}
@@ -328,6 +296,8 @@ const TodoItem = ({ id, showDescription, height = 0 }) => {
 
 TodoItem.propTypes = {
   id: propTypes.number.isRequired,
+  showDescription: propTypes.bool,
+  height: propTypes.number,
 };
 
 export default TodoItem;
