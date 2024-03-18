@@ -159,7 +159,7 @@ PopoverForm.propTypes = {
   close: propTypes.func.isRequired,
 };
 
-const TodoItem = ({ id, showDescription, height = 0 }) => {
+const TodoItem = ({ id }) => {
   const [token] = useLocalStorage("token", "");
   const todo = useSelector((state) =>
     state.login.user.todos.find((t) => t.id === id)
@@ -204,15 +204,11 @@ const TodoItem = ({ id, showDescription, height = 0 }) => {
     setAnchorEl(null);
   };
 
-  let showDescriptionString = "";
-  if (todo?.description && showDescription)
-    showDescriptionString = "description";
   return (
     <Paper
       elevation={4}
       sx={{
         width: "97%",
-        minHeight: height,
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
@@ -249,15 +245,8 @@ const TodoItem = ({ id, showDescription, height = 0 }) => {
             {todo?.title || "title"}
           </Typography>
         </Box>
-
         <PriorityButton id={id} />
       </Box>
-      <Typography sx={{ fontSize: "85%" }}>
-        {todo?.description}
-        {/** This line there for initially calculating the height of the
-            todoItem by the parent */}
-        {showDescriptionString}
-      </Typography>
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
         <Button onClick={openPopOver} disabled={todo?.status === "COMPLETED"}>
           Edit

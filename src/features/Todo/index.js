@@ -10,7 +10,7 @@ import {
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import propTypes from "prop-types";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import useSmallScreen from "../../hooks/useSmallScreen";
 import CreateTodo from "./CreateTodo";
 import DeletedTodos from "./DeletedTodos";
@@ -102,7 +102,6 @@ EmptyTodoList.propTypes = {
 
 const Todo = () => {
   const [openCreateTodoDialog, setOpenCreateTodoDialog] = useState(false);
-  const [todoItemHeight, setTodoItemHeight] = useState(0);
   const [showDeletedTodos, setShowDeletedTodos] = useState(false);
   const isSmallScreen = useSmallScreen();
   const TodoItemRef = useRef();
@@ -113,11 +112,6 @@ const Todo = () => {
   const handleShowDeletedTodos = () => {
     setShowDeletedTodos((prev) => !prev);
   };
-  useEffect(() => {
-    if (!todoItemHeight) {
-      setTodoItemHeight(TodoItemRef?.current?.getBoundingClientRect().height);
-    }
-  }, [todoItemHeight]);
 
   const todos = useSearchedTodos();
   return (
@@ -136,13 +130,14 @@ const Todo = () => {
         >
           <Box
             sx={{
-              width: isSmallScreen ?"90vw":"55vw",
+              width: showDeletedTodos ? '100%':'70vw',
               display: "flex",
               alignItems: "center",
               flexDirection: "column",
             }}
           >
-            <Grid container spacing={1}>
+            {
+              todos?.length !== 0 && <Grid container spacing={1}>
               <Grid item xs={4}>
                 <Button
                   onClick={setOpenCreateTodoDialog}
@@ -155,7 +150,7 @@ const Todo = () => {
               </Grid>
               <Grid item xs={8}>
                 <Box
-                  border={2}
+                  border={1}
                   borderRadius={1}
                   borderColor="primary.main"
                   sx={{
@@ -170,6 +165,7 @@ const Todo = () => {
                 </Box>
               </Grid>
             </Grid>
+            }
             <Box
               sx={{
                 overflowY: "auto",
@@ -191,20 +187,11 @@ const Todo = () => {
               }}
             >
               <Grid container spacing={2} ref={TodoItemRef}>
-                {!todoItemHeight ? (
-                  <Grid item xs={4}>
-                    <TodoItem showDescription={true} />
+                {todos?.map((val) => (
+                  <Grid item key={val.id} xs={4}>
+                    <TodoItem id={val.id} />
                   </Grid>
-                ) : (
-                  todos?.map((val) => (
-                    <Grid item key={val.id} xs={4}>
-                      <TodoItem
-                        id={val.id}
-                        height={todoItemHeight}
-                      />
-                    </Grid>
-                  ))
-                )}
+                ))}
               </Grid>
               {todos?.length === 0 && (
                 <EmptyTodoList setCreateTodoDialog={setOpenCreateTodoDialog} />
