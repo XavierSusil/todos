@@ -21,7 +21,7 @@ import AngleUpArrowIcon from "../../components/icons/AngleUpArrowIcon";
 import DoubleUpArrowIcon from "../../components/icons/DoubleUpArrowIcon";
 import TripleUpArrowIcon from "../../components/icons/TripleUpArrowIcon";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useLocalStorage from "../../hooks/useLocalStorage";
 
@@ -164,7 +164,6 @@ const TodoItem = ({ id }) => {
   const todo = useSelector((state) =>
     state.login.user.todos.find((t) => t.id === id)
   );
-  const todoItemRef = useRef();
   const [anchorEl, setAnchorEl] = useState(null);
 
   const dispatch = useDispatch();
@@ -206,7 +205,7 @@ const TodoItem = ({ id }) => {
 
   return (
     <Paper
-      elevation={4}
+      elevation={3}
       sx={{
         width: "97%",
         display: "flex",
@@ -214,7 +213,6 @@ const TodoItem = ({ id }) => {
         justifyContent: "space-between",
         p: 1,
       }}
-      ref={todoItemRef}
     >
       {/**
        * This is item's  first line
@@ -247,6 +245,12 @@ const TodoItem = ({ id }) => {
         </Box>
         <PriorityButton id={id} />
       </Box>
+      {/**
+       * textSecondary to have a low brightness kind of effect for the text
+       */}
+      <Typography fontSize="0.7rem" color="textSecondary">
+        {todo?.description}
+      </Typography>
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
         <Button onClick={openPopOver} disabled={todo?.status === "COMPLETED"}>
           Edit

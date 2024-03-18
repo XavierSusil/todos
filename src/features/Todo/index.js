@@ -10,7 +10,7 @@ import {
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import propTypes from "prop-types";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import useSmallScreen from "../../hooks/useSmallScreen";
 import CreateTodo from "./CreateTodo";
 import DeletedTodos from "./DeletedTodos";
@@ -18,6 +18,7 @@ import TodoItem from "./TodoItem";
 import useSearchedTodos from "./useSearchedTodos";
 import { SortComponent } from "../../components/SortComponent";
 import { FilterComponent } from "../../components/FilterComponent";
+import useMasonryTodos from "./useMasonryTodos";
 
 const CreateTodoWindow = ({
   setCreateTodoDialog,
@@ -84,7 +85,6 @@ const EmptyTodoList = ({ setCreateTodoDialog }) => {
       >
         <Typography variant="h5">Todo List is empty </Typography>
         <Typography variant="subtitle2">
-          {" "}
           Click below to Add a new todo
         </Typography>
         <CreateTodoWindow
@@ -104,7 +104,6 @@ const Todo = () => {
   const [openCreateTodoDialog, setOpenCreateTodoDialog] = useState(false);
   const [showDeletedTodos, setShowDeletedTodos] = useState(false);
   const isSmallScreen = useSmallScreen();
-  const TodoItemRef = useRef();
   const handleCreateTodoDialogClose = () => {
     setOpenCreateTodoDialog(false);
   };
@@ -114,6 +113,7 @@ const Todo = () => {
   };
 
   const todos = useSearchedTodos();
+  const masonryTodos = useMasonryTodos();
   return (
     <Box
       sx={{
@@ -130,42 +130,42 @@ const Todo = () => {
         >
           <Box
             sx={{
-              width: showDeletedTodos ? '100%':'70vw',
+              width: showDeletedTodos ? "100%" : "70vw",
               display: "flex",
               alignItems: "center",
               flexDirection: "column",
             }}
           >
-            {
-              todos?.length !== 0 && <Grid container spacing={1}>
-              <Grid item xs={4}>
-                <Button
-                  onClick={setOpenCreateTodoDialog}
-                  variant="contained"
-                  color="secondary"
-                  fullWidth
-                >
-                  New Todo
-                </Button>
+            {todos?.length !== 0 && (
+              <Grid container spacing={1}>
+                <Grid item xs={4}>
+                  <Button
+                    onClick={setOpenCreateTodoDialog}
+                    variant="contained"
+                    color="secondary"
+                    fullWidth
+                  >
+                    New Todo
+                  </Button>
+                </Grid>
+                <Grid item xs={8}>
+                  <Box
+                    border={1}
+                    borderRadius={1}
+                    borderColor="primary.main"
+                    sx={{
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <SortComponent />
+                    <FilterComponent />
+                  </Box>
+                </Grid>
               </Grid>
-              <Grid item xs={8}>
-                <Box
-                  border={1}
-                  borderRadius={1}
-                  borderColor="primary.main"
-                  sx={{
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    flexDirection: "row",
-                  }}
-                >
-                  <SortComponent />
-                  <FilterComponent />
-                </Box>
-              </Grid>
-            </Grid>
-            }
+            )}
             <Box
               sx={{
                 overflowY: "auto",
@@ -186,10 +186,16 @@ const Todo = () => {
                 },
               }}
             >
-              <Grid container spacing={2} ref={TodoItemRef}>
-                {todos?.map((val) => (
-                  <Grid item key={val.id} xs={4}>
-                    <TodoItem id={val.id} />
+              <Grid container spacing={2}>
+                {masonryTodos?.map((list) => (
+                  <Grid item xs={4}>
+                    <Grid container spacing={1}>
+                      {list.map((val) => (
+                       <Grid item xs ={12}>
+                         <TodoItem id={val.id} />
+                        </Grid>
+                      ))}
+                    </Grid>
                   </Grid>
                 ))}
               </Grid>
