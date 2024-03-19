@@ -211,7 +211,6 @@ const TodoItem = ({ id }) => {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        p: 1,
       }}
     >
       {/**
@@ -248,7 +247,7 @@ const TodoItem = ({ id }) => {
       {/**
        * textSecondary to have a low brightness kind of effect for the text
        */}
-      <Typography fontSize="0.7rem" color="textSecondary">
+      <Typography fontSize="0.7rem" color="textSecondary" sx={{px:1}}>
         {todo?.description}
       </Typography>
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>

@@ -9,7 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 
-
 import DeleteIcon from "@mui/icons-material/Delete";
 import { red } from "@mui/material/colors";
 import propTypes from "prop-types";
@@ -19,11 +18,11 @@ import { useDispatch } from "react-redux";
 import useLocalStorage from "../../../hooks/useLocalStorage";
 import {
   deleteTodoBulkThunk,
-  updateTodoStatusBulkThunk
+  updateTodoStatusBulkThunk,
 } from "../../../redux/slices/loginSlice";
 import { enqueue } from "../../../redux/slices/snackbarSlice";
 import { DeletedItem, DeletedItemUI } from "./DeletedItem";
-import useDeletedTodos from "./useDeletedTodos";
+import useDeletedTodos from "../../../hooks/useDeletedTodos";
 
 export const DeleteDialog = ({
   deleteDialog,
@@ -137,26 +136,24 @@ const DeletedTodoListUI = (props) => {
       <Typography sx={{ fontWeight: "bold" }}>
         Recently Deleted Todos
       </Typography>
-      {props?.todos?.length !== 0 && (
-        <Box sx={{ display: "flex", gap: 1 }}>
-          <Button
-            color="primary"
-            variant="contained"
-            fullWidth
-            onClick={handleRestoreAllClick}
-          >
-            restore all
-          </Button>
-          <Button
-            color="secondary"
-            variant="contained"
-            fullWidth
-            onClick={handleDeleteAllButton}
-          >
-            delete all
-          </Button>
-        </Box>
-      )}
+      <Box sx={{ display: "flex", gap: 1 }}>
+        <Button
+          color="primary"
+          variant="contained"
+          fullWidth
+          onClick={handleRestoreAllClick}
+        >
+          restore all
+        </Button>
+        <Button
+          color="secondary"
+          variant="contained"
+          fullWidth
+          onClick={handleDeleteAllButton}
+        >
+          delete all
+        </Button>
+      </Box>
       {props?.todos?.map((todo) => (
         <DeletedItem
           key={todo.title}
@@ -166,9 +163,6 @@ const DeletedTodoListUI = (props) => {
           minHeight={props.minHeight}
         />
       ))}
-      {props?.todos?.length === 0 && (
-        <Typography>No items in the Recently Deleted List </Typography>
-      )}
       <DeleteDialog
         deleteDialog={deleteDialogState}
         setDeleteDialog={setDeleteDialogState}

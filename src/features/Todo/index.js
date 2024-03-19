@@ -10,14 +10,14 @@ import {
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import propTypes from "prop-types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { FilterComponent } from "../../components/FilterComponent";
+import { SortComponent } from "../../components/SortComponent";
+import useDeletedTodos from "../../hooks/useDeletedTodos";
 import useSmallScreen from "../../hooks/useSmallScreen";
 import CreateTodo from "./CreateTodo";
 import DeletedTodos from "./DeletedTodos";
 import TodoItem from "./TodoItem";
-import useSearchedTodos from "./useSearchedTodos";
-import { SortComponent } from "../../components/SortComponent";
-import { FilterComponent } from "../../components/FilterComponent";
 import useMasonryTodos from "./useMasonryTodos";
 
 const CreateTodoWindow = ({
@@ -104,16 +104,29 @@ const Todo = () => {
   const [openCreateTodoDialog, setOpenCreateTodoDialog] = useState(false);
   const [showDeletedTodos, setShowDeletedTodos] = useState(false);
   const isSmallScreen = useSmallScreen();
+  const deletedTodos = useDeletedTodos();
+  const masonryTodos = useMasonryTodos();
+
+  const isEmptyTodos = () => {
+    return masonryTodos.every((list) => list.length === 0);
+  };
   const handleCreateTodoDialogClose = () => {
     setOpenCreateTodoDialog(false);
   };
 
   const handleShowDeletedTodos = () => {
-    setShowDeletedTodos((prev) => !prev);
+    let curr = !showDeletedTodos;
+    if (deletedTodos.length === 0) curr = false;
+    setShowDeletedTodos(curr);
   };
 
-  const todos = useSearchedTodos();
-  const masonryTodos = useMasonryTodos();
+  /**
+   * this useEffect is use to set the showDeletedTodos value after the
+   * deleted todos items have been modified
+   */
+  useEffect(() => {
+    if (deletedTodos.length === 0) setShowDeletedTodos(false);
+  }, [deletedTodos, setShowDeletedTodos]);
   return (
     <Box
       sx={{
@@ -136,36 +149,34 @@ const Todo = () => {
               flexDirection: "column",
             }}
           >
-            {todos?.length !== 0 && (
-              <Grid container spacing={1}>
-                <Grid item xs={4}>
-                  <Button
-                    onClick={setOpenCreateTodoDialog}
-                    variant="contained"
-                    color="secondary"
-                    fullWidth
-                  >
-                    New Todo
-                  </Button>
-                </Grid>
-                <Grid item xs={8}>
-                  <Box
-                    border={1}
-                    borderRadius={1}
-                    borderColor="primary.main"
-                    sx={{
-                      width: "100%",
-                      display: "flex",
-                      justifyContent: "flex-end",
-                      flexDirection: "row",
-                    }}
-                  >
-                    <SortComponent />
-                    <FilterComponent />
-                  </Box>
-                </Grid>
+            <Grid container spacing={1}>
+              <Grid item xs={4}>
+                <Button
+                  onClick={setOpenCreateTodoDialog}
+                  variant="contained"
+                  color="secondary"
+                  fullWidth
+                >
+                  New Todo
+                </Button>
               </Grid>
-            )}
+              <Grid item xs={8}>
+                <Box
+                  border={1}
+                  borderRadius={1}
+                  borderColor="primary.main"
+                  sx={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    flexDirection: "row",
+                  }}
+                >
+                  <SortComponent />
+                  <FilterComponent />
+                </Box>
+              </Grid>
+            </Grid>
             <Box
               sx={{
                 overflowY: "auto",
@@ -191,21 +202,21 @@ const Todo = () => {
                   <Grid item xs={4}>
                     <Grid container spacing={1}>
                       {list.map((val) => (
-                       <Grid item xs ={12}>
-                         <TodoItem id={val.id} />
+                        <Grid item xs={12}>
+                          <TodoItem id={val.id} />
                         </Grid>
                       ))}
                     </Grid>
                   </Grid>
                 ))}
               </Grid>
-              {todos?.length === 0 && (
+              {isEmptyTodos() && (
                 <EmptyTodoList setCreateTodoDialog={setOpenCreateTodoDialog} />
               )}
             </Box>
           </Box>
         </Grid>
-        {showDeletedTodos && (
+        {showDeletedTodos && deletedTodos?.length !== 0 && (
           <Grid item xs={4}>
             <DeletedTodos />
           </Grid>
@@ -230,7 +241,9 @@ const Todo = () => {
           />
         </BottomNavigation>
       )}
-      <Button onClick={handleShowDeletedTodos}>deleted todos</Button>
+      {deletedTodos?.length !== 0 && (
+        <Button onClick={handleShowDeletedTodos}>view deleted todos </Button>
+      )}
     </Box>
   );
 };
