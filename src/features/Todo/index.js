@@ -198,11 +198,11 @@ const Todo = () => {
               }}
             >
               <Grid container spacing={2}>
-                {masonryTodos?.map((list) => (
-                  <Grid item xs={4}>
+                {masonryTodos?.map((list,index) => (
+                  <Grid item xs={4} key={index}>
                     <Grid container spacing={1}>
                       {list.map((val) => (
-                        <Grid item xs={12}>
+                        <Grid item xs={12} key={val.id}>
                           <TodoItem id={val.id} />
                         </Grid>
                       ))}
