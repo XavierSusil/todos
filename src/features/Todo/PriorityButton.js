@@ -6,7 +6,11 @@ import AngleUpArrowIcon from "../../components/icons/AngleUpArrowIcon";
 import DoubleUpArrowIcon from "../../components/icons/DoubleUpArrowIcon";
 import TripleUpArrowIcon from "../../components/icons/TripleUpArrowIcon";
 import useLocalStorage from "../../hooks/useLocalStorage";
-import { selectTodoById, updateTodoThunk } from "../../redux/slices/loginSlice";
+import {
+  loading,
+  selectTodoById,
+  updateTodoThunk,
+} from "../../redux/slices/loginSlice";
 import { enqueue } from "../../redux/slices/snackbarSlice";
 
 const PriorityIcon = ({ priority, color }) => {
@@ -58,7 +62,10 @@ export const PriorityButton = ({
       description: todo.description,
       priority: priority,
     };
-    dispatch(updateTodoThunk({ id, data, token }));
+    handlePopoverClose();
+    dispatch(loading({ id, isLoading: true }));
+    await dispatch(updateTodoThunk({ id, data, token }));
+    dispatch(loading({ id, isLoading: false }));
   };
 
   const open = Boolean(anchorEl);

@@ -1,14 +1,19 @@
-import { Box, IconButton, Paper, Tooltip, Typography } from "@mui/material";
-import { updateTodoStatusApi } from "../../../api/updateTodoApi";
 import { DeleteForever } from "@mui/icons-material";
 import RestoreIcon from "@mui/icons-material/Restore";
+import { Box, IconButton, Paper, Tooltip, Typography } from "@mui/material";
 import propTypes from "prop-types";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import useLocalStorage from "../../../hooks/useLocalStorage";
-import { updateTodoStatus,deleteTodo } from "../../../redux/slices/loginSlice";
 import { DeleteDialog } from ".";
 import deleteTodoApi from "../../../api/deleteTodoApi";
+import { updateTodoStatusApi } from "../../../api/updateTodoApi";
+import CircularLoadingOverlayWrapper from "../../../components/LoadingOverlay";
+import useLocalStorage from "../../../hooks/useLocalStorage";
+import {
+  deleteTodo,
+  loading,
+  updateTodoStatus,
+} from "../../../redux/slices/loginSlice";
 import { enqueue } from "../../../redux/slices/snackbarSlice";
 
 export const DeletedItemUI = (props) => {
@@ -31,26 +36,26 @@ export const DeletedItemUI = (props) => {
       >
         {props?.title}
       </Typography>
-      {
-        props?.isHovered && <Box>
-        <Tooltip title="Restore">
-          <IconButton color="primary">
-            <RestoreIcon
-              onClick={props?.handleRestoreButton}
-              fontSize="small"
-            />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Delete permanently">
-          <IconButton
-            color="error"
-            onClick={props?.handlePermanentDeleteButton}
-          >
-            <DeleteForever fontSize="small" />
-          </IconButton>
-        </Tooltip>
-      </Box>
-      }
+      {props?.isHovered && (
+        <Box>
+          <Tooltip title="Restore">
+            <IconButton color="primary">
+              <RestoreIcon
+                onClick={props?.handleRestoreButton}
+                fontSize="small"
+              />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete permanently">
+            <IconButton
+              color="error"
+              onClick={props?.handlePermanentDeleteButton}
+            >
+              <DeleteForever fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      )}
     </Box>
   );
 };
@@ -60,17 +65,25 @@ DeletedItemUI.propTypes = {
   status: propTypes.string,
   handlePermanentDeleteButton: propTypes.func,
   handleRestoreButton: propTypes.func,
-  isHovered:propTypes.bool
+  isHovered: propTypes.bool,
 };
 
-export const DeletedItem = ({ id, title, status,minHeight }) => {
+export const DeletedItem = ({
+  id,
+  title,
+  status,
+  minHeight,
+  isLoading = false,
+}) => {
   const [token] = useLocalStorage("token", "");
   const dispatch = useDispatch();
   const [deleteDialogState, setDeleteDialogState] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   const updateStatusHelper = async (state) => {
+    dispatch(loading({ id: id, isLoading: true }));
     await updateTodoStatusApi(id, state, token);
+    dispatch(loading({ id: id, isLoading: false }));
     dispatch(updateTodoStatus({ id, status: state }));
   };
 
@@ -100,27 +113,34 @@ export const DeletedItem = ({ id, title, status,minHeight }) => {
   };
 
   return (
-    <Paper
-      key={title}
-      sx={{ p: 1,minHeight:{minHeight},display:'flex',alignItems:'center'}}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      <DeletedItemUI
-        title={title}
-        status={status}
-        handlePermanentDeleteButton={handlePermanentDeleteButton}
-        handleRestoreButton={handleRestoreButton}
-        isHovered={isHovered}
-      />
-      <DeleteDialog
-        deleteDialog={deleteDialogState}
-        setDeleteDialog={setDeleteDialogState}
-        callbackFunction = {handlePermanentDeleteCallback}
-        message="Are you sure you want to delete this Todo Permanently?"
-        buttonName="delete"
-      />
-    </Paper>
+    <CircularLoadingOverlayWrapper isLoading={isLoading}>
+      <Paper
+        key={title}
+        sx={{
+          p: 1,
+          minHeight: { minHeight },
+          display: "flex",
+          alignItems: "center",
+        }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <DeletedItemUI
+          title={title}
+          status={status}
+          handlePermanentDeleteButton={handlePermanentDeleteButton}
+          handleRestoreButton={handleRestoreButton}
+          isHovered={isHovered}
+        />
+        <DeleteDialog
+          deleteDialog={deleteDialogState}
+          setDeleteDialog={setDeleteDialogState}
+          callbackFunction={handlePermanentDeleteCallback}
+          message="Are you sure you want to delete this Todo Permanently?"
+          buttonName="delete"
+        />
+      </Paper>
+    </CircularLoadingOverlayWrapper>
   );
 };
 
@@ -128,5 +148,5 @@ DeletedItem.propTypes = {
   id: propTypes.number.isRequired,
   title: propTypes.string.isRequired,
   status: propTypes.string.isRequired,
-  minHeight: propTypes.number
+  minHeight: propTypes.number,
 };

@@ -106,7 +106,10 @@ const DeletedTodoListUI = (props) => {
 
   const handleDeleteAllCallback = async () => {
     const data = props.todos.map((element) => element.id);
-    dispatch(deleteTodoBulkThunk({ data, token }));
+    /**
+     * await require to  synchronize the deletion of the todos and the snackbar
+     */
+    await dispatch(deleteTodoBulkThunk({ data, token }));
     dispatch(
       enqueue({ message: "todos deleted permanently", variant: "success" })
     );
@@ -115,8 +118,11 @@ const DeletedTodoListUI = (props) => {
   return (
     <Box
       sx={{
+        height: "100%",
         display: "flex",
+        borderRadius: 1,
         flexDirection: "column",
+        backgroundColor: "rgba(128,128,128,0.5)",
         gap: 1,
         p: 1,
         overflowY: "auto",
@@ -161,6 +167,7 @@ const DeletedTodoListUI = (props) => {
           id={todo.id}
           status={todo.status}
           minHeight={props.minHeight}
+          isLoading={todo.isLoading}
         />
       ))}
       <DeleteDialog

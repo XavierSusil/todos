@@ -18,7 +18,9 @@ import { deleteTodoBulkApi } from "../../api/deleteTodoApi";
 const addTodoReducer = (state, action) => {
   if (state.isLoggedIn) {
     if (state?.user?.todos === null) state.user.todos = [];
-    state.user.todos.unshift(action?.payload);
+    let data = action?.payload;
+    if (data) data = { ...data, isLoading: false };
+    state.user.todos.unshift(data);
   }
 };
 
@@ -100,6 +102,14 @@ const loginSlice = createSlice({
       state.user = action.payload;
       if (state.user.todos !== null)
         state.user.todos.sort((a, b) => b.id - a.id);
+      /**
+       * The following statement will add the isLoading state
+       * for the UI purposes
+       */
+      state.user.todos = state.user.todos.map((item) => ({
+        ...item,
+        isLoading: false,
+      }));
     },
     logout: (state) => {
       state.isLoggedIn = false;
@@ -116,6 +126,10 @@ const loginSlice = createSlice({
         (t) => t.id !== action.payload
       );
     },
+    loading: (state, action) => {
+      state.user.todos.find((t) => t.id === action.payload.id).isLoading =
+        action.payload.isLoading;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -131,28 +145,25 @@ const loginSlice = createSlice({
       .addCase(updateTodoStatusBulkThunk.fulfilled, (state, action) => {
         const updatedItems = action.payload;
 
-        state.user.todos = state.user.todos
-          .map((todo) => {
-            const updatedItem = updatedItems.find(
-              (item) => item.id === todo.id
-            );
+        state.user.todos = state.user.todos.map((todo) => {
+          const updatedItem = updatedItems.find((item) => item.id === todo.id);
 
-            if (updatedItem) return updatedItem;
-            return todo;
-          })
-
-      }).addCase(deleteTodoBulkThunk.fulfilled, (state, action) => {
+          if (updatedItem) return updatedItem;
+          return todo;
+        });
+      })
+      .addCase(deleteTodoBulkThunk.fulfilled, (state, action) => {
         state.user.todos = state.user.todos.filter(
           (todo) => !action.payload.includes(todo.id)
         );
-      })
+      });
   },
 });
 
 export const selectTodoById = (state, id) =>
   state?.login?.user?.todos?.find((t) => t.id === id);
 
-export const { login, logout, addTodo, updateTodoStatus, deleteTodo } =
+export const { login, logout, addTodo, updateTodoStatus, deleteTodo, loading } =
   loginSlice.actions;
 
 export default loginSlice.reducer;

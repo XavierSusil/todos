@@ -21,19 +21,21 @@ import AngleUpArrowIcon from "../../components/icons/AngleUpArrowIcon";
 import DoubleUpArrowIcon from "../../components/icons/DoubleUpArrowIcon";
 import TripleUpArrowIcon from "../../components/icons/TripleUpArrowIcon";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useLocalStorage from "../../hooks/useLocalStorage";
 
 import {
   updateTodoStatus,
   updateTodoThunk,
+  loading,
 } from "../../redux/slices/loginSlice";
 
 import { deepPurple } from "@mui/material/colors";
 import { updateTodoStatusApi } from "../../api/updateTodoApi";
 import { enqueue } from "../../redux/slices/snackbarSlice";
 import PriorityButton from "./PriorityButton";
+import CircularLoadingOverlayWrapper from "../../components/LoadingOverlay";
 
 const PopoverForm = ({ id, title, description, priority, close }) => {
   const [titleUse, setTitleUse] = useState(title);
@@ -54,7 +56,7 @@ const PopoverForm = ({ id, title, description, priority, close }) => {
     setPriorityUse(e.currentTarget.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const data = {
@@ -67,9 +69,17 @@ const PopoverForm = ({ id, title, description, priority, close }) => {
       description: description,
       priority: priority,
     };
-    if (!Object.keys(data).every((key) => data[key] === previousData[key]))
-      dispatch(updateTodoThunk({ id, data, token }));
-    close();
+    if (!Object.keys(data).every((key) => data[key] === previousData[key])){
+      close();
+      dispatch(loading({id,isLoading: true}));
+      /**
+       * to make the upcoming dispatch event to wait until updation happens 
+       * await is used with updateTodoThunk
+       */
+      await dispatch(updateTodoThunk({ id, data, token }));
+      dispatch(loading({id, isLoading: false}));
+    }
+
   };
 
   return (
@@ -179,6 +189,7 @@ const TodoItem = ({ id }) => {
   };
 
   const handleCheckBoxChange = async () => {
+    dispatch(loading({id: todo.id, isLoading: true}));
     if (todo?.status === "IN_PROGRESS") {
       await updateStatusHelper("COMPLETED");
       dispatch(enqueue({ message: "Todo Marked as done", variant: "success" }));
@@ -188,11 +199,15 @@ const TodoItem = ({ id }) => {
         enqueue({ message: "Todo Marked as not done", variant: "success" })
       );
     }
+    dispatch(loading({id: todo.id, isLoading: false}));
   };
 
   const handleDeleteButton = async () => {
+    dispatch(loading({id: todo.id, isLoading: true}));
     await updateStatusHelper(`DELETED_${todo?.status}`);
+    dispatch(loading({id: todo.id, isLoading: false}));
     dispatch(enqueue({ message: "Todo deleted", variant: "success" }));
+    
   };
 
   const openPopOver = (e) => {
@@ -204,85 +219,91 @@ const TodoItem = ({ id }) => {
   };
 
   return (
-    <Paper
-      elevation={3}
-      sx={{
-        width: "97%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-      }}
-    >
-      {/**
-       * This is item's  first line
-       */}
-      <Box
+    <CircularLoadingOverlayWrapper isLoading={todo.isLoading}>
+      <Paper
+        elevation={3}
+        position="relative"
         sx={{
+          width: "97%",
           display: "flex",
-          alignItems: "center",
+          flexDirection: "column",
           justifyContent: "space-between",
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Checkbox
-            checked={checked}
-            size="small"
-            color="secondary"
-            onChange={handleCheckBoxChange}
-            onClick={(event) => event.stopPropagation()}
-          />
-          <Typography
-            style={{
-              fontWeight: "bold",
-              textDecoration:
-                todo?.status === "COMPLETED" ? "line-through" : "",
-              opacity: todo?.status === "COMPLETED" ? 0.5 : 1,
-            }}
-          >
-            {todo?.title || "title"}
-          </Typography>
+        {/**
+         * This is item's  first line
+         */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Checkbox
+              checked={checked}
+              size="small"
+              color="secondary"
+              onChange={handleCheckBoxChange}
+              onClick={(event) => event.stopPropagation()}
+            />
+            <Typography
+              style={{
+                fontWeight: "bold",
+                textDecoration:
+                  todo?.status === "COMPLETED" ? "line-through" : "",
+                opacity: todo?.status === "COMPLETED" ? 0.5 : 1,
+              }}
+            >
+              {todo?.title || "title"}
+            </Typography>
+          </Box>
+          <PriorityButton id={id} />
         </Box>
-        <PriorityButton id={id} />
-      </Box>
-      {/**
-       * textSecondary to have a low brightness kind of effect for the text
-       */}
-      <Typography fontSize="0.7rem" color="textSecondary" sx={{px:1}}>
-        {todo?.description}
-      </Typography>
-      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Button onClick={openPopOver} disabled={todo?.status === "COMPLETED"}>
-          Edit
-        </Button>
-        <Button color="secondary" onClick={handleDeleteButton}>
-          delete
-        </Button>
-      </Box>
-      <Popover
-        id={popOverId}
-        open={isPopOverOpen}
-        anchorEl={anchorEl}
-        onClose={closePopOver}
-        anchorOrigin={{
-          vertical: "center",
-          horizontal: "left",
-        }}
-        transformOrigin={{
-          vertical: "center",
-          horizontal: "right",
-        }}
-      >
-        <PopoverForm
-          title={todo?.title}
-          description={todo?.description}
-          priority={todo?.priority}
-          userid={todo?.userid}
-          id={todo?.id}
-          status={todo?.status}
-          close={closePopOver}
-        />
-      </Popover>
-    </Paper>
+        {/**
+         * textSecondary to have a low brightness kind of effect for the text
+         */}
+        <Typography fontSize="0.7rem" color="textSecondary" sx={{ px: 1 }}>
+          {todo?.description}
+        </Typography>
+        {/**
+         * third line for the edit and delete buttons
+         */}
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Button onClick={openPopOver} disabled={todo?.status === "COMPLETED"}>
+            Edit
+          </Button>
+          <Button color="secondary" onClick={handleDeleteButton}>
+            delete
+          </Button>
+        </Box>
+        <Popover
+          id={popOverId}
+          open={isPopOverOpen}
+          anchorEl={anchorEl}
+          onClose={closePopOver}
+          anchorOrigin={{
+            vertical: "center",
+            horizontal: "left",
+          }}
+          transformOrigin={{
+            vertical: "center",
+            horizontal: "right",
+          }}
+        >
+          <PopoverForm
+            title={todo?.title}
+            description={todo?.description}
+            priority={todo?.priority}
+            userid={todo?.userid}
+            id={todo?.id}
+            status={todo?.status}
+            close={closePopOver}
+          />
+        </Popover>
+      </Paper>
+    </CircularLoadingOverlayWrapper>
   );
 };
 
