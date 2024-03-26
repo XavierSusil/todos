@@ -10,7 +10,7 @@ import {
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import propTypes from "prop-types";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { FilterComponent } from "../../components/FilterComponent";
 import { SortComponent } from "../../components/SortComponent";
 import useDeletedTodos from "../../hooks/useDeletedTodos";
@@ -19,6 +19,7 @@ import CreateTodo from "./CreateTodo";
 import DeletedTodos from "./DeletedTodos";
 import TodoItem from "./TodoItem";
 import useMasonryTodos from "./useMasonryTodos";
+import CircularLoadingOverlayWrapper from "../../components/LoadingOverlay";
 
 const CreateTodoWindow = ({
   setCreateTodoDialog,
@@ -106,7 +107,8 @@ const Todo = () => {
   const isSmallScreen = useSmallScreen();
   const deletedTodos = useDeletedTodos();
   const masonryTodos = useMasonryTodos();
-
+  const {isCreatingTodo} = useReducer((state) => state?.login?.isCreatingTodo);
+  console.log("isCreatingTodo",isCreatingTodo);
   const isEmptyTodos = () => {
     return masonryTodos.every((list) => list.length === 0);
   };
@@ -128,123 +130,128 @@ const Todo = () => {
     if (deletedTodos.length === 0) setShowDeletedTodos(false);
   }, [deletedTodos, setShowDeletedTodos]);
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        width: "98%",
-      }}
-    >
-      <Grid container spacing={1}>
-        <Grid
-          item
-          xs={showDeletedTodos ? 8 : 12}
-          sx={{ display: "flex", justifyContent: "center" }}
-        >
-          <Box
-            sx={{
-              width: showDeletedTodos ? "100%" : "70vw",
-              display: "flex",
-              alignItems: "center",
-              flexDirection: "column",
-            }}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          width: "98%",
+        }}
+      >
+        <Grid container spacing={1}>
+          <Grid
+            item
+            xs={showDeletedTodos ? 8 : 12}
+            sx={{ display: "flex", justifyContent: "center" }}
           >
-            <Grid container spacing={1}>
-              <Grid item xs={4}>
-                <Button
-                  onClick={setOpenCreateTodoDialog}
-                  variant="contained"
-                  color="secondary"
-                  fullWidth
-                >
-                  New Todo
-                </Button>
-              </Grid>
-              <Grid item xs={8}>
-                <Box
-                  border={1}
-                  borderRadius={1}
-                  borderColor="primary.main"
-                  sx={{
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    flexDirection: "row",
-                  }}
-                >
-                  <SortComponent />
-                  <FilterComponent />
-                </Box>
-              </Grid>
-            </Grid>
+            <CircularLoadingOverlayWrapper isLoading={undefined}>
             <Box
               sx={{
-                overflowY: "auto",
-                overflowX: "hidden",
-                gap: 1,
-                p: 1,
-                width: "95%",
-                height: "70vh",
-                "&::-webkit-scrollbar": {
-                  width: "0.3em",
-                },
-                "&::-webkit-scrollbar-thumb": {
-                  borderRadius: "0.6em",
-                  backgroundColor: "#888",
-                },
-                "&::-webkit-scrollbar-thumb:hover": {
-                  background: "#555",
-                },
+                width: showDeletedTodos ? "100%" : "70vw",
+                display: "flex",
+                alignItems: "center",
+                flexDirection: "column",
               }}
             >
-              <Grid container spacing={2}>
-                {masonryTodos?.map((list,index) => (
-                  <Grid item xs={4} key={index}>
-                    <Grid container spacing={1}>
-                      {list.map((val) => (
-                        <Grid item xs={12} key={val.id}>
-                          <TodoItem id={val.id} />
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </Grid>
-                ))}
+              <Grid container spacing={1}>
+                <Grid item xs={4}>
+                  <Button
+                    onClick={setOpenCreateTodoDialog}
+                    variant="contained"
+                    color="secondary"
+                    fullWidth
+                  >
+                    New Todo
+                  </Button>
+                </Grid>
+                <Grid item xs={8}>
+                  <Box
+                    border={1}
+                    borderRadius={1}
+                    borderColor="primary.main"
+                    sx={{
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <SortComponent />
+                    <FilterComponent />
+                  </Box>
+                </Grid>
               </Grid>
-              {isEmptyTodos() && (
-                <EmptyTodoList setCreateTodoDialog={setOpenCreateTodoDialog} />
-              )}
+              <Box
+                sx={{
+                  overflowY: "auto",
+                  overflowX: "hidden",
+                  gap: 1,
+                  p: 1,
+                  width: "95%",
+                  height: "70vh",
+                  "&::-webkit-scrollbar": {
+                    width: "0.3em",
+                  },
+                  "&::-webkit-scrollbar-thumb": {
+                    borderRadius: "0.6em",
+                    backgroundColor: "#888",
+                  },
+                  "&::-webkit-scrollbar-thumb:hover": {
+                    background: "#555",
+                  },
+                }}
+              >
+                <Grid container spacing={2}>
+                  {masonryTodos?.map((list, index) => (
+                    <Grid item xs={4} key={index}>
+                      <Grid container spacing={1}>
+                        {list.map((val) => (
+                          <Grid item xs={12} key={val.id}>
+                            <TodoItem id={val.id} />
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </Grid>
+                  ))}
+                </Grid>
+                {isEmptyTodos() && (
+                  <EmptyTodoList
+                    setCreateTodoDialog={setOpenCreateTodoDialog}
+                  />
+                )}
+              </Box>
             </Box>
-          </Box>
-        </Grid>
-        {showDeletedTodos && deletedTodos?.length !== 0 && (
-          <Grid item xs={4}>
-            <DeletedTodos />
+            </CircularLoadingOverlayWrapper>
           </Grid>
-        )}
-      </Grid>
-      <Dialog
-        open={openCreateTodoDialog}
-        onClose={handleCreateTodoDialogClose}
-        fullWidth
-        maxWidth="md"
-      >
-        <CreateTodo close={handleCreateTodoDialogClose} />
-      </Dialog>
-      {isSmallScreen && (
-        <BottomNavigation
-          sx={{ p: 1, position: "fixed", bottom: "5vh", right: "1vw" }}
-          label="New Todo"
+          {showDeletedTodos && deletedTodos?.length !== 0 && (
+            <Grid item xs={4}>
+              <DeletedTodos />
+            </Grid>
+          )}
+        </Grid>
+        <Dialog
+          open={openCreateTodoDialog}
+          onClose={handleCreateTodoDialogClose}
+          fullWidth
+          maxWidth="md"
         >
-          <CreateTodoWindow
-            isSmallScreen
-            setCreateTodoDialog={setOpenCreateTodoDialog}
-          />
-        </BottomNavigation>
-      )}
-      {deletedTodos?.length !== 0 && (
-        <Button onClick={handleShowDeletedTodos}>view deleted todos </Button>
-      )}
-    </Box>
+          <CreateTodo close={handleCreateTodoDialogClose} />
+        </Dialog>
+        {isSmallScreen && (
+          <BottomNavigation
+            sx={{ p: 1, position: "fixed", bottom: "5vh", right: "1vw" }}
+            label="New Todo"
+          >
+            <CreateTodoWindow
+              isSmallScreen
+              setCreateTodoDialog={setOpenCreateTodoDialog}
+            />
+          </BottomNavigation>
+        )}
+        {deletedTodos?.length !== 0 && (
+          <Button onClick={handleShowDeletedTodos}>view deleted todos </Button>
+        )}
+      </Box>
+
   );
 };
 

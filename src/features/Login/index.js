@@ -16,18 +16,21 @@ import loginApi from "../../api/loginApi";
 import LoginImage from "../../assets/loginPageBack.jpg";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { login as loginAction } from "../../redux/slices/loginSlice";
+import CircularLoadingOverlayWrapper from "../../components/LoadingOverlay";
+import { useState } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
   const [, setToken] = useLocalStorage("token", "");
+  const [loginButtonLoading, setLoginButtonLoading] = useState(false);
   const dispatch = useDispatch();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-
+    setLoginButtonLoading(true);
     const fromApi = await loginApi(data.get("username"), data.get("password"));
-
+    setLoginButtonLoading(false);
     if (fromApi.hasOwnProperty("token")) {
       enqueueSnackbar("Login Success", { variant: "success" });
       setToken(fromApi.token);
@@ -101,14 +104,16 @@ const Login = () => {
                   id="password"
                   autoComplete="current-password"
                 />
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
-                >
-                  Login
-                </Button>
+                <CircularLoadingOverlayWrapper isLoading={loginButtonLoading}>
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    sx={{ p: 1 }}
+                  >
+                    Login
+                  </Button>
+                </CircularLoadingOverlayWrapper>
                 <Grid container justifyContent="flex-end">
                   <Grid item>
                     <Link href="/register" variant="body2">

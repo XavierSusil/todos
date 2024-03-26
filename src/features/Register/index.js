@@ -17,6 +17,8 @@ import RegisterImage from "../../assets/registerPageBack.jpg";
 import { useNavigate } from "react-router-dom";
 import registerApi from "../../api/registerApi";
 import validate from "../../utils/validate/validate";
+import { useState } from "react";
+import CircularLoadingOverlayWrapper from "../../components/LoadingOverlay";
 
 const enqueEmptyErrorMessage = (field) => {
   enqueueSnackbar(`Please enter ${field}`, {
@@ -78,12 +80,15 @@ const validateForm = (data) => {
 
 const Register = () => {
   const navigate = useNavigate();
+  const [registerButtonLoading, setRegisterButtonLoading] = useState(false);
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
     if (validateForm(data)) {
+      setRegisterButtonLoading(true);
       const dataFromApi = await registerApi(data);
+      setRegisterButtonLoading(false);
       if (dataFromApi.hasOwnProperty("token")) {
         enqueueSnackbar("User Registered Successfully", {
           variant: "success",
@@ -131,7 +136,7 @@ const Register = () => {
                 onSubmit={handleSubmit}
                 sx={{ mt: 3 }}
               >
-                <Grid container spacing={2}>
+                <Grid container spacing={2} sx={{mb:1}}>
                   <Grid item xs={12} sm={6}>
                     <TextField
                       autoComplete="given-name"
@@ -196,14 +201,18 @@ const Register = () => {
                     />
                   </Grid>
                 </Grid>
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
+                <CircularLoadingOverlayWrapper
+                  isLoading={registerButtonLoading}
                 >
-                  REGISTER
-                </Button>
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    sx={{ p: 1 }}
+                  >
+                    REGISTER
+                  </Button>
+                </CircularLoadingOverlayWrapper>
                 <Grid container justifyContent="flex-end">
                   <Grid item>
                     <Link href="/login" variant="body2">

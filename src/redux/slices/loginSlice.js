@@ -94,6 +94,7 @@ const loginSlice = createSlice({
   name: "login",
   initialState: {
     isLoggedIn: false,
+    isCreatingTodo: false,
     user: null,
   },
   reducers: {
@@ -130,6 +131,9 @@ const loginSlice = createSlice({
       state.user.todos.find((t) => t.id === action.payload.id).isLoading =
         action.payload.isLoading;
     },
+    creatingTodo: (state,action) => {
+      state.isCreatingTodo = action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -163,7 +167,7 @@ const loginSlice = createSlice({
 export const selectTodoById = (state, id) =>
   state?.login?.user?.todos?.find((t) => t.id === id);
 
-export const { login, logout, addTodo, updateTodoStatus, deleteTodo, loading } =
+export const { login, logout, addTodo, updateTodoStatus, deleteTodo, loading,creatingTodo } =
   loginSlice.actions;
 
 export default loginSlice.reducer;
